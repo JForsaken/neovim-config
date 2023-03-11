@@ -43,6 +43,13 @@ require("lazy").setup({
 			})
 		end,
 	},
+	-- comment
+	{
+		"numToStr/Comment.nvim",
+		config = function()
+			require("Comment").setup()
+		end,
+	},
 	{
 		"neovim/nvim-lspconfig",
 	},
