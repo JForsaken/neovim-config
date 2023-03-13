@@ -40,6 +40,7 @@ wk.register({
 			N = { "<cmd>lua vim.diagnostic.goto_prev()<cr>", "Previous" },
 		},
 		m = {
+			c = { "<cmd>CloakToggle<cr>", "Toggle Cloak" },
 			name = "Mode",
 			g = {
 				name = "Go To",
