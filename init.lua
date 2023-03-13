@@ -70,6 +70,7 @@ require("lazy").setup({
 	{ "tpope/vim-fugitive" },
 	{ "nvim-treesitter/nvim-treesitter-context" },
 	{ "windwp/nvim-autopairs" },
+	{ "nvim-tree/nvim-web-devicons" },
 	{
 		"VonHeikemen/lsp-zero.nvim",
 		branch = "v1.x",
