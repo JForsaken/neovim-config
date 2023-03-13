@@ -28,7 +28,7 @@ wk.register({
 		},
 		p = {
 			name = "Project",
-			f = { "<cmd>Telescope find_files<cr>", "Find File" },
+			f = { "<cmd>Telescope find_files hidden=true<cr>", "Find File" },
 			r = { "<cmd>Telescope oldfiles<cr>", "Open Recent File" },
 			n = { "<cmd>enew<cr>", "New File" },
 		},
