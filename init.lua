@@ -126,7 +126,7 @@ wk.register({
 			t = { "<cmd>tabnew<cr>", "New Tab" },
 			q = { "<cmd>q<cr>", "Quit" },
 		},
-		["<TAB>"] = { "<cmd>bprev<cr>", "Next Buffer" },
+		["<TAB>"] = { "<cmd>b#<cr>", "Next Buffer" },
 		f = {
 			name = "File",
 			g = { "<cmd>Telescope live_grep<cr>", "Live Grep" },
@@ -161,6 +161,7 @@ wk.register({
 			name = "Mode",
 			g = {
 				name = "Go To",
+				d = { "<cmd>lua vim.lsp.buf.definition()<cr>", "Definition" },
 				r = { "<cmd>lua vim.lsp.buf.references()<cr>", "References" },
 			},
 			r = {
