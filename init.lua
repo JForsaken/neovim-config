@@ -3,8 +3,8 @@ vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 -- set termguicolors to enable highlight groups
 vim.opt.termguicolors = true
--- line numbers
-vim.wo.number = true
+-- enable relative line numbers
+vim.opt.relativenumber = true
 -- Allow clipboard copy paste in neovim
 vim.g.neovide_input_use_logo = 1
 vim.api.nvim_set_keymap("", "<D-v>", "+p<CR>", { noremap = true, silent = true })
