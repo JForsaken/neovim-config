@@ -14,6 +14,7 @@
   "golden_size": { "branch": "master", "commit": "301907c3bd877912ca3d4125c602a23f8c4a7c95" },
   "lazy.nvim": { "branch": "main", "commit": "5b4444f0d7e556deba3f7ca949a2ba0e2c3369fb" },
   "lsp-zero.nvim": { "branch": "v1.x", "commit": "63951c8f9701871abd6858d26f3bcc6b99ce5c74" },
+  "lualine.nvim": { "branch": "master", "commit": "e99d733e0213ceb8f548ae6551b04ae32e590c80" },
   "mason-lspconfig.nvim": { "branch": "main", "commit": "a81503f0019942111fe464209237f8b4e85f4687" },
   "mason.nvim": { "branch": "main", "commit": "10ff879fc56160e10437da5c1ca558371ddb6989" },
   "neovim": { "branch": "main", "commit": "1883d8b417403f1d8c56d52d90445bbbe6be4b80" },
