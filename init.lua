@@ -60,6 +60,10 @@ require("lazy").setup({
 			vim.cmd("colorscheme rose-pine")
 		end,
 	},
+	{
+		"nvim-telescope/telescope-fzf-native.nvim",
+		run = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build",
+	},
 	{ "nvim-treesitter/nvim-treesitter", run = ":TSUpdate" },
 	{ "nvim-treesitter/playground" },
 	{ "mbbill/undotree" },
@@ -95,7 +99,12 @@ require("lazy").setup({
 	{
 		"nvim-telescope/telescope.nvim",
 		tag = "0.1.1",
-		dependencies = { "nvim-lua/plenary.nvim" },
+		dependencies = {
+			{ "nvim-lua/plenary.nvim" },
+			{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+			{ "nvim-telescope/telescope-file-browser.nvim" },
+			{ "nvim-telescope/telescope-ui-select.nvim" },
+		},
 	},
 	{
 		"nvim-telescope/telescope-file-browser.nvim",
