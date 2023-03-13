@@ -1,13 +1,15 @@
 local null_ls = require("null-ls")
 local formatting = null_ls.builtins.formatting
+local diagnostics = null_ls.builtins.diagnostics
+local completion = null_ls.builtins.completion
+
 local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 
 local sources = {
-	formatting.eslint_d,
 	formatting.stylua,
-	null_ls.builtins.diagnostics.eslint_d,
-	null_ls.builtins.diagnostics.stylua,
-	null_ls.builtins.completion.spell,
+	formatting.eslint_d,
+	diagnostics.eslint_d,
+	completion.spell,
 }
 
 require("lspconfig").tsserver.setup({
