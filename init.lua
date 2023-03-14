@@ -123,7 +123,6 @@ require("lazy").setup({
 		"nvim-lualine/lualine.nvim",
 		requires = { "kyazdani42/nvim-web-devicons", opt = true },
 	},
-
 	{
 		"RRethy/vim-illuminate",
 		lazy = true,
