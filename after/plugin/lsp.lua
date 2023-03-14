@@ -53,7 +53,7 @@ lsp.on_attach(function(client, bufnr)
 		vim.lsp.buf.hover()
 	end, opts)
 	vim.keymap.set("i", "<C-h>", function()
-		vim.lsp.buf.signature_help()
+		vim.lsp.buf.completion()
 	end, opts)
 
 	require("lsp_signature").on_attach({
