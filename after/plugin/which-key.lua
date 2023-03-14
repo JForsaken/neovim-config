@@ -39,6 +39,13 @@ wk.register({
 			n = { "<cmd>lua vim.diagnostic.goto_next()<cr>", "Next" },
 			N = { "<cmd>lua vim.diagnostic.goto_prev()<cr>", "Previous" },
 		},
+		g = {
+			name = "Git",
+			-- git blame
+			b = { "<cmd>Git blame<cr>", "Blame" },
+			c = { "<cmd>Telescope git_commits<cr>", "Commits" },
+			s = { "<cmd>Telescope git_status<cr>", "Status" },
+		},
 		m = {
 			c = { "<cmd>CloakToggle<cr>", "Toggle Cloak" },
 			name = "Mode",

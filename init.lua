@@ -53,13 +53,7 @@ require("lazy").setup({
 	{
 		"neovim/nvim-lspconfig",
 	},
-	{
-		"rose-pine/neovim",
-		as = "rose-pine",
-		config = function()
-			vim.cmd("colorscheme rose-pine")
-		end,
-	},
+	{ "rose-pine/neovim", name = "rose-pine" },
 	{
 		"nvim-telescope/telescope-fzf-native.nvim",
 		run = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build",
@@ -140,4 +134,15 @@ require("lazy").setup({
 		event = { "CursorMoved", "InsertLeave" },
 	},
 	{ "ray-x/lsp_signature.nvim" },
+	{
+		"glepnir/dashboard-nvim",
+		event = "VimEnter",
+		config = function()
+			require("dashboard").setup({
+				-- config
+			})
+		end,
+		dependencies = { { "nvim-tree/nvim-web-devicons" } },
+	},
+	{ "Mofiqul/dracula.nvim" },
 })
