@@ -52,8 +52,8 @@ lsp.on_attach(function(client, bufnr)
 	vim.keymap.set("n", "K", function()
 		vim.lsp.buf.hover()
 	end, opts)
-	vim.keymap.set("i", "<C-h>", function()
-		vim.lsp.buf.completion()
+	vim.keymap.set("n", "<C-h>", function()
+		vim.lsp.buf.code_action()
 	end, opts)
 
 	require("lsp_signature").on_attach({
