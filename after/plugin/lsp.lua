@@ -55,6 +55,15 @@ lsp.on_attach(function(client, bufnr)
 	vim.keymap.set("i", "<C-h>", function()
 		vim.lsp.buf.signature_help()
 	end, opts)
+
+	require("lsp_signature").on_attach({
+		bind = true,
+		handler_opts = {
+			border = "single",
+		},
+	})
+
+	require("illuminate").on_attach(client)
 end)
 
 lsp.setup()

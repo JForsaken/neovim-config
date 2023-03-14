@@ -129,4 +129,15 @@ require("lazy").setup({
 		"nvim-lualine/lualine.nvim",
 		requires = { "kyazdani42/nvim-web-devicons", opt = true },
 	},
+
+	{
+		"RRethy/vim-illuminate",
+		lazy = true,
+		enabled = true,
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+		},
+		event = { "CursorMoved", "InsertLeave" },
+	},
+	{ "ray-x/lsp_signature.nvim" },
 })
