@@ -55,6 +55,9 @@ lsp.on_attach(function(client, bufnr)
 	vim.keymap.set("n", "<C-h>", function()
 		vim.lsp.buf.code_action()
 	end, opts)
+	vim.keymap.set("n", "<Tab>", function()
+		vim.lsp.buf.code_action()
+	end, opts)
 
 	require("lsp_signature").on_attach({
 		bind = true,
