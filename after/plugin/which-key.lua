@@ -67,8 +67,8 @@ wk.register({
 			f = { "<cmd>BufferPick<cr>", "Magic Pick Tab" },
 			n = { "<cmd>BufferNext<cr>", "Next Tab" },
 			N = { "<cmd>BufferPrevious<cr>", "Previous Tab" },
-			p = { "<cmd>BufferClose<cr>", "Pin Tab" },
-			q = { "<cmd>BufferPin<cr>", "Close Tab" },
+			q = { "<cmd>BufferClose<cr>", "Pin Tab" },
+			p = { "<cmd>BufferPin<cr>", "Close Tab" },
 		},
 	},
 })
