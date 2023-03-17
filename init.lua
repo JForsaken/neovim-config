@@ -145,4 +145,5 @@ require("lazy").setup({
 		dependencies = { { "nvim-tree/nvim-web-devicons" } },
 	},
 	{ "Mofiqul/dracula.nvim" },
+	{ "romgrk/barbar.nvim", dependencies = "nvim-tree/nvim-web-devicons" },
 })

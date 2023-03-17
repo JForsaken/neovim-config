@@ -60,5 +60,15 @@ wk.register({
 			},
 			z = { "<cmd>ZenMode<cr>", "Toggle Zen" },
 		},
+		t = {
+			name = "Tab",
+			["/"] = { "<cmd>tabnew<cr>", "New Tab" },
+			c = { "<cmd>BufferCloseAllButCurrent<cr>", "Close All But Current Tab" },
+			f = { "<cmd>BufferPick<cr>", "Magic Pick Tab" },
+			n = { "<cmd>BufferNext<cr>", "Next Tab" },
+			N = { "<cmd>BufferPrevious<cr>", "Previous Tab" },
+			p = { "<cmd>BufferClose<cr>", "Pin Tab" },
+			q = { "<cmd>BufferPin<cr>", "Close Tab" },
+		},
 	},
 })
