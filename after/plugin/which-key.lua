@@ -62,13 +62,11 @@ wk.register({
 		},
 		t = {
 			name = "Tab",
-			["/"] = { "<cmd>tabnew<cr>", "New Tab" },
-			c = { "<cmd>BufferCloseAllButCurrent<cr>", "Close All But Current Tab" },
-			f = { "<cmd>BufferPick<cr>", "Magic Pick Tab" },
-			l = { "<cmd>BufferNext<cr>", "Next Tab" },
-			h = { "<cmd>BufferPrevious<cr>", "Previous Tab" },
-			q = { "<cmd>BufferClose<cr>", "Pin Tab" },
-			p = { "<cmd>BufferPin<cr>", "Close Tab" },
+			["/"] = { "<cmd>$tabnew<cr>", "New Tab" },
+			c = { "<cmd>tabonly<cr>", "Close All But Current Tab" },
+			l = { "<cmd>tabn<cr>", "Next Tab" },
+			h = { "<cmd>tabp<cr>", "Previous Tab" },
+			q = { "<cmd>tabclode<cr>", "Pin Tab" },
 		},
 	},
 })
