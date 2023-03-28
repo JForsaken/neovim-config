@@ -66,7 +66,7 @@ wk.register({
 			c = { "<cmd>tabonly<cr>", "Close All But Current Tab" },
 			l = { "<cmd>tabn<cr>", "Next Tab" },
 			h = { "<cmd>tabp<cr>", "Previous Tab" },
-			q = { "<cmd>tabclode<cr>", "Pin Tab" },
+			q = { "<cmd>tabclose<cr>", "Close Tab" },
 		},
 	},
 })

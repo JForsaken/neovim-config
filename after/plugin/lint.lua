@@ -8,8 +8,8 @@ local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 local sources = {
 	formatting.stylua,
 	formatting.eslint_d,
+	formatting.rustfmt,
 	diagnostics.eslint_d,
-	completion.spell,
 }
 
 require("lspconfig").tsserver.setup({
