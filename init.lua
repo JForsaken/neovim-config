@@ -146,5 +146,6 @@ require("lazy").setup({
 	},
 	{ "Mofiqul/dracula.nvim" },
 	{ "nanozuki/tabby.nvim" },
-	{ "JellyApple102/easyread.nvim" },
+	{ "neovim/nvim-lspconfig" },
+	{ "simrat39/rust-tools.nvim" },
 })
