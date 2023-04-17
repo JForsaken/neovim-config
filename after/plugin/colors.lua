@@ -49,3 +49,5 @@ require("rose-pine").setup({
 })
 
 vim.cmd("colorscheme rose-pine")
+vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#f6c177", bold = true })
+vim.api.nvim_set_hl(0, "CursorLine", { bg = "NONE" })

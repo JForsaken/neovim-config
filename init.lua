@@ -4,7 +4,9 @@ vim.g.loaded_netrwPlugin = 1
 -- set termguicolors to enable highlight groups
 vim.opt.termguicolors = true
 -- enable relative line numbers
-vim.opt.relativenumber = true
+vim.wo.number = true
+vim.wo.relativenumber = true
+vim.wo.cursorline = true
 -- Allow clipboard copy paste in neovim
 vim.opt.clipboard = "unnamedplus"
 vim.g.neovide_input_use_logo = 1
