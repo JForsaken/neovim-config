@@ -9,6 +9,10 @@ vim.keymap.set("n", "<leader>vh", builtin.help_tags, {})
 local telescope = require("telescope")
 telescope.setup({
 	extensions = {
+		live_grep_args = {
+			auto_quoting = true, -- enable/disable auto-quoting
+			-- define mappings, e.g.
+		},
 		fzf = {
 			fuzzy = true, -- false will only do exact matching
 			override_generic_sorter = true, -- override the generic sorter

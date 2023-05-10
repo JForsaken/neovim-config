@@ -98,6 +98,7 @@ require("lazy").setup({
 		"nvim-telescope/telescope.nvim",
 		tag = "0.1.1",
 		dependencies = {
+			{ "nvim-telescope/telescope-live-grep-args.nvim" },
 			{ "nvim-lua/plenary.nvim" },
 			{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
 			{ "nvim-telescope/telescope-file-browser.nvim" },

@@ -11,7 +11,7 @@ wk.register({
 		["<TAB>"] = { "<cmd>b#<cr>", "Next Buffer" },
 		f = {
 			name = "File",
-			g = { "<cmd>Telescope live_grep<cr>", "Live Grep" },
+			g = { "<cmd>lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>", "Live Grep" },
 			j = { "<cmd>Telescope file_browser path=%:p:h<cr> ", "File Browser" },
 			r = { "<cmd>Telescope oldfiles<cr>", "Open Recent File" },
 			n = { "<cmd>enew<cr>", "New File" },
