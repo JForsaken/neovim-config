@@ -8,6 +8,9 @@ vim.keymap.set("n", "<leader>vh", builtin.help_tags, {})
 
 local telescope = require("telescope")
 telescope.setup({
+	defaults = {
+		file_ignore_patterns = { "node_modules", "dist", ".git" },
+	},
 	extensions = {
 		live_grep_args = {
 			auto_quoting = true, -- enable/disable auto-quoting
