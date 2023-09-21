@@ -1,11 +1,11 @@
 local lsp = require("lsp-zero")
+local lspconfig = require("lspconfig")
 
 lsp.preset("recommended")
 
 lsp.ensure_installed({
 	"tsserver",
 	"rust_analyzer",
-	"solidity",
 })
 
 -- Fix Undefined global 'vim'
@@ -17,6 +17,13 @@ lsp.configure("lua-language-server", {
 			},
 		},
 	},
+})
+
+lspconfig.solidity.setup({
+	cmd = { "nomicfoundation-solidity-language-server", "--stdio" },
+	filetypes = { "solidity" },
+	root_dir = require("lspconfig.util").find_git_ancestor,
+	single_file_support = true,
 })
 
 local cmp = require("cmp")
