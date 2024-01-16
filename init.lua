@@ -112,7 +112,7 @@ require("lazy").setup({
 	},
 	-- eslint
 	{ "neovim/nvim-lspconfig" },
-	{ "jose-elias-alvarez/null-ls.nvim" },
+	{ "nvimtools/none-ls.nvim" },
 	{ "MunifTanjim/eslint.nvim" },
 	-- golden ratio
 	{ "dm1try/golden_size" },

@@ -18,9 +18,22 @@ require("lspconfig").tsserver.setup({
 	end,
 })
 
+require("lspconfig").biome.setup({})
+
 null_ls.setup({
 	debug = false,
-	sources = sources,
+	sources = vim.list_extend(sources or {}, {
+		require("null-ls").builtins.formatting.biome,
+
+		-- or if you like to live dangerously like me:
+		require("null-ls").builtins.formatting.biome.with({
+			args = {
+				"check",
+				"--apply",
+				"$FILENAME",
+			},
+		}),
+	}),
 	on_attach = function(client, bufnr)
 		if client.supports_method("textDocument/formatting") then
 			vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
