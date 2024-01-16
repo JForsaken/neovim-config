@@ -23,7 +23,7 @@
   "none-ls.nvim": { "branch": "main", "commit": "cf81e765460f722a381e5f3f5e3cbdce88398517" },
   "nvim-autopairs": { "branch": "master", "commit": "e755f366721bc9e189ddecd39554559045ac0a18" },
   "nvim-cmp": { "branch": "main", "commit": "feed47fd1da7a1bad2c7dca456ea19c8a5a9823a" },
-  "nvim-lspconfig": { "branch": "master", "commit": "4bb0f1845c5cc6465aecedc773fc2d619fcd8faf" },
+  "nvim-lspconfig": { "branch": "master", "commit": "7eed8b2150192e5ad05e1886fdf133493ddf2928" },
   "nvim-surround": { "branch": "main", "commit": "177c95c12542cf20a422b19a87ba1ae80254445a" },
   "nvim-treesitter": { "branch": "master", "commit": "834f1dcb8736c82b1269227b4bfe830310b5b6a1" },
   "nvim-treesitter-context": { "branch": "master", "commit": "cb6252b00d19c8b57e8e66de19a601df28455dd1" },

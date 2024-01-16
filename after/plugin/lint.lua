@@ -2,23 +2,24 @@ local null_ls = require("null-ls")
 local formatting = null_ls.builtins.formatting
 local diagnostics = null_ls.builtins.diagnostics
 local completion = null_ls.builtins.completion
+local lspconfig = require("lspconfig")
 
 local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 
 local sources = {
 	formatting.stylua,
-	formatting.eslint_d,
-	diagnostics.eslint_d,
+	-- formatting.eslint_d,
+	-- diagnostics.eslint_d,
 	formatting.rustfmt,
 }
 
-require("lspconfig").tsserver.setup({
+lspconfig.tsserver.setup({
 	on_attach = function(client)
 		client.resolved_capabilities.document_formatting = false
 	end,
 })
 
-require("lspconfig").biome.setup({})
+lspconfig.biome.setup({})
 
 null_ls.setup({
 	debug = false,
@@ -30,6 +31,7 @@ null_ls.setup({
 			args = {
 				"check",
 				"--apply",
+				"--skip-errors",
 				"$FILENAME",
 			},
 		}),
