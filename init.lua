@@ -97,7 +97,7 @@ require("lazy").setup({
 	{ "laytan/cloak.nvim" },
 	{
 		"nvim-telescope/telescope.nvim",
-		tag = "0.1.4",
+		tag = "0.1.6",
 		dependencies = {
 			{ "nvim-telescope/telescope-live-grep-args.nvim" },
 			{ "nvim-lua/plenary.nvim" },
