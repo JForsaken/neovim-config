@@ -10,6 +10,7 @@ local telescope = require("telescope")
 telescope.setup({
 	defaults = {
 		file_ignore_patterns = { "node_modules", "dist", ".git" },
+		hidden = true,
 	},
 	extensions = {
 		live_grep_args = {
