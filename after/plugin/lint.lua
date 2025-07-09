@@ -13,7 +13,7 @@ local sources = {
 	formatting.rustfmt,
 }
 
-lspconfig.tsserver.setup({
+lspconfig.ts_ls.setup({
 	on_attach = function(client)
 		client.resolved_capabilities.document_formatting = false
 	end,
@@ -25,16 +25,6 @@ null_ls.setup({
 	debug = false,
 	sources = vim.list_extend(sources or {}, {
 		require("null-ls").builtins.formatting.biome,
-
-		-- or if you like to live dangerously like me:
-		require("null-ls").builtins.formatting.biome.with({
-			args = {
-				"check",
-				"--apply",
-				"--skip-errors",
-				"$FILENAME",
-			},
-		}),
 	}),
 	on_attach = function(client, bufnr)
 		if client.supports_method("textDocument/formatting") then
