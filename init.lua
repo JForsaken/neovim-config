@@ -22,7 +22,7 @@ vim.opt.expandtab = true
 vim.bo.softtabstop = 2
 
 if vim.g.neovide then
-	vim.g.neovide_cursor_vfx_mode = { "pixiedust", "sonicboom" }
+	vim.g.neovide_cursor_vfx_mode = { "pixiedust" }
 end
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
