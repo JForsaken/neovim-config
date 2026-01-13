@@ -1,12 +1,19 @@
 local wk = require("which-key")
+
 wk.register({
 	["<leader>"] = {
 		a = {
-			name = "Application",
-			-- open a new shell
-			s = { "<cmd>tabnew | terminal<cr>", "New Shell" },
-			t = { "<cmd>tabnew<cr>", "New Tab" },
-			q = { "<cmd>q<cr>", "Quit" },
+			name = "AI",
+			-- ask @this
+			a = { "<cmd>lua require('opencode').ask('@this: ', { submit = true })<cr>", "Ask opencode" },
+			-- select
+			s = { "<cmd>lua require('opencode').select()<cr>", "Execute opencode action…" },
+			-- toggle
+			t = { "<cmd>lua require('opencode').toggle()<cr>", "Toggle opencode" },
+			-- add range to opencode
+			r = { "<cmd>lua require('opencode').operator('@this ')<cr>", "Add range to opencode" },
+			-- add line to opencode
+			l = { "<cmd>lua require('opencode').operator('@this ') .. '_' <cr>", "Add line to opencode" },
 		},
 		["<TAB>"] = { "<cmd>b#<cr>", "Next Buffer" },
 		f = {
