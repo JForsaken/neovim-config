@@ -1,28 +1,21 @@
+-- Zen mode is configured in init.lua
+-- Additional keymaps for different zen modes
+
 vim.keymap.set("n", "<leader>zz", function()
-	require("zen-mode").setup({
-		window = {
-			width = 90,
-			options = {},
-		},
+	require("zen-mode").toggle({
+		window = { width = 90 },
 	})
-	require("zen-mode").toggle()
 	vim.wo.wrap = false
 	vim.wo.number = true
-	vim.wo.rnu = true
-	ColorMyPencils()
-end)
+	vim.wo.relativenumber = true
+end, { desc = "Toggle Zen Mode (wide)" })
 
 vim.keymap.set("n", "<leader>zZ", function()
-	require("zen-mode").setup({
-		window = {
-			width = 80,
-			options = {},
-		},
+	require("zen-mode").toggle({
+		window = { width = 80 },
 	})
-	require("zen-mode").toggle()
 	vim.wo.wrap = false
 	vim.wo.number = false
-	vim.wo.rnu = false
+	vim.wo.relativenumber = false
 	vim.opt.colorcolumn = "0"
-	ColorMyPencils()
-end)
+end, { desc = "Toggle Zen Mode (narrow)" })

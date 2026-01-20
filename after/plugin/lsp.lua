@@ -209,6 +209,7 @@ vim.g.rustaceanvim = {
 
 local cmp = require("cmp")
 local luasnip = require("luasnip")
+local lspkind = require("lspkind")
 
 -- Load friendly snippets
 require("luasnip.loaders.from_vscode").lazy_load()
@@ -259,15 +260,17 @@ cmp.setup({
 		{ name = "path", priority = 250 },
 	}),
 	formatting = {
-		format = function(entry, vim_item)
-			vim_item.menu = ({
+		format = lspkind.cmp_format({
+			mode = "symbol_text",
+			maxwidth = 50,
+			ellipsis_char = "...",
+			menu = {
 				nvim_lsp = "[LSP]",
 				luasnip = "[Snippet]",
 				buffer = "[Buffer]",
 				path = "[Path]",
-			})[entry.source.name]
-			return vim_item
-		end,
+			},
+		}),
 	},
 })
 

@@ -1,232 +1,521 @@
+-- ============================================================================
+-- Leader Key
+-- ============================================================================
 vim.g.mapleader = " "
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-vim.opt.guifont = { "Comic Mono", ":h15" }
--- set termguicolors to enable highlight groups
-vim.opt.termguicolors = true
--- enable relative line numbers
-vim.wo.number = true
-vim.wo.relativenumber = true
-vim.wo.cursorline = true
--- Allow clipboard copy paste in neovim
-vim.opt.clipboard = "unnamedplus"
-vim.g.neovide_input_use_logo = 1
-vim.api.nvim_set_keymap("", "<D-v>", "+p<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap("!", "<D-v>", "<C-R>+", { noremap = true, silent = true })
-vim.api.nvim_set_keymap("t", "<D-v>", "<C-R>+", { noremap = true, silent = true })
-vim.api.nvim_set_keymap("v", "<D-v>", "<C-R>+", { noremap = true, silent = true })
--- spaces
-vim.opt.tabstop = 2
-vim.opt.shiftwidth = 2
-vim.opt.expandtab = true
-vim.bo.softtabstop = 2
--- handle swap files better
-vim.opt.shortmess:append("A") -- don't show swap file warnings
+vim.g.maplocalleader = " "
 
+-- ============================================================================
+-- Modern Neovim Options
+-- ============================================================================
+local opt = vim.opt
+
+-- UI
+opt.number = true
+opt.relativenumber = true
+opt.cursorline = true
+opt.termguicolors = true
+opt.signcolumn = "yes"
+opt.scrolloff = 8
+opt.sidescrolloff = 8
+opt.wrap = false
+
+-- Indentation
+opt.tabstop = 2
+opt.shiftwidth = 2
+opt.expandtab = true
+opt.smartindent = true
+opt.breakindent = true
+
+-- Search
+opt.ignorecase = true
+opt.smartcase = true
+opt.hlsearch = false
+opt.incsearch = true
+
+-- Performance
+opt.updatetime = 250
+opt.timeoutlen = 300
+opt.lazyredraw = false
+
+-- Clipboard
+opt.clipboard = "unnamedplus"
+
+-- Splits
+opt.splitright = true
+opt.splitbelow = true
+
+-- Files
+opt.swapfile = false
+opt.backup = false
+opt.undofile = true
+opt.undodir = vim.fn.stdpath("data") .. "/undo"
+opt.shortmess:append("A") -- Don't show swap warnings
+
+-- Completion
+opt.completeopt = { "menu", "menuone", "noselect" }
+opt.pumheight = 10
+
+-- Neovide
 if vim.g.neovide then
-	vim.g.neovide_cursor_vfx_mode = { "pixiedust" }
+	vim.g.neovide_cursor_vfx_mode = "railgun"
+	vim.g.neovide_input_use_logo = 1
+	opt.guifont = { "Comic Mono", ":h15" }
 end
 
+-- Disable netrw (we'll use modern file explorers)
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
+-- ============================================================================
+-- Bootstrap lazy.nvim
+-- ============================================================================
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
 	vim.fn.system({
 		"git",
 		"clone",
 		"--filter=blob:none",
 		"https://github.com/folke/lazy.nvim.git",
-		"--branch=stable", -- latest stable release
+		"--branch=stable",
 		lazypath,
 	})
 end
-vim.opt.rtp:prepend(lazypath)
+opt.rtp:prepend(lazypath)
 
+-- ============================================================================
+-- Plugins
+-- ============================================================================
 require("lazy").setup({
+	-- ========================================================================
+	-- UI & Appearance
+	-- ========================================================================
 	{
-		"folke/which-key.nvim",
-		config = function()
-			vim.o.timeout = true
-			vim.o.timeoutlen = 300
-			require("which-key").setup({
-				-- your configuration comes here
-				-- or leave it empty to use the default settings
-				-- refer to the configuration section below
-			})
-		end,
-	},
-	-- comment
-	{
-		"numToStr/Comment.nvim",
-		config = function()
-			require("Comment").setup()
-		end,
-	},
-	{
-		"neovim/nvim-lspconfig",
-	},
-	{ "rose-pine/neovim", name = "rose-pine" },
-	{
-		"nvim-telescope/telescope-fzf-native.nvim",
-		run = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build",
-	},
-	{ "nvim-treesitter/nvim-treesitter", run = ":TSUpdate" },
-	{ "nvim-treesitter/playground" },
-	{ "mbbill/undotree" },
-	{ "tpope/vim-fugitive" },
-	{ "nvim-treesitter/nvim-treesitter-context" },
-	{ "windwp/nvim-autopairs" },
-	{ "nvim-tree/nvim-web-devicons" },
-	{
-		"VonHeikemen/lsp-zero.nvim",
-		branch = "v1.x",
-		dependencies = {
-			-- LSP Support
-			{ "neovim/nvim-lspconfig" }, -- Required
-			{ "williamboman/mason.nvim" }, -- Optional
-			{ "williamboman/mason-lspconfig.nvim" }, -- Optional
-
-		-- Autocompletion
-		{ "hrsh7th/nvim-cmp" }, -- Required
-		{ "hrsh7th/cmp-nvim-lsp" }, -- Required
-		{ "hrsh7th/cmp-buffer" }, -- Optional
-		{ "hrsh7th/cmp-path" }, -- Optional
-		{ "hrsh7th/cmp-cmdline" }, -- Optional
-		{ "saadparwaiz1/cmp_luasnip" }, -- Optional
-		{ "hrsh7th/cmp-nvim-lua" }, -- Optional
-
-			-- Snippets
-			{
-				"L3MON4D3/LuaSnip",
-				-- follow latest release.
-				version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
-			},
-			{ "rafamadriz/friendly-snippets" }, -- Optional
-		},
-	},
-	{ "folke/zen-mode.nvim" },
-	{ "github/copilot.vim" },
-	{ "eandrju/cellular-automaton.nvim" },
-	{ "laytan/cloak.nvim" },
-	{
-		"nvim-telescope/telescope.nvim",
-		tag = "0.1.6",
-		dependencies = {
-			{ "nvim-telescope/telescope-live-grep-args.nvim" },
-			{ "nvim-lua/plenary.nvim" },
-			{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
-			{ "nvim-telescope/telescope-file-browser.nvim" },
-			{ "nvim-telescope/telescope-ui-select.nvim" },
-		},
-	},
-	{
-		"nvim-telescope/telescope-file-browser.nvim",
-		dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
-	},
-	-- eslint
-	{ "neovim/nvim-lspconfig" },
-	{ "nvimtools/none-ls.nvim" },
-	{ "MunifTanjim/eslint.nvim" },
-	-- golden ratio
-	{ "dm1try/golden_size" },
-	{
-		"kylechui/nvim-surround",
-		config = function()
-			require("nvim-surround").setup({
-				-- Configuration here, or leave empty to use defaults
-			})
-		end,
-	},
-	{
-		"nvim-lualine/lualine.nvim",
-		requires = { "kyazdani42/nvim-web-devicons", opt = true },
-	},
-	{
-		"RRethy/vim-illuminate",
-		lazy = true,
-		enabled = true,
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-		},
-		event = { "CursorMoved", "InsertLeave" },
-	},
-	{ "ray-x/lsp_signature.nvim" },
-	{
-		"glepnir/dashboard-nvim",
-		event = "VimEnter",
-		config = function()
-			require("dashboard").setup({
-				-- config
-			})
-		end,
-		dependencies = { { "nvim-tree/nvim-web-devicons" } },
-	},
-	{ "Mofiqul/dracula.nvim" },
-	{ "nanozuki/tabby.nvim" },
-	{ "neovim/nvim-lspconfig" },
-	{
-		"mrcjkb/rustaceanvim",
-		version = "^5",
+		"folke/tokyonight.nvim",
 		lazy = false,
-		ft = { "rust" },
+		priority = 1000,
+		config = function()
+			require("tokyonight").setup({
+				style = "night",
+				transparent = false,
+				terminal_colors = true,
+				styles = {
+					comments = { italic = true },
+					keywords = { italic = true },
+				},
+			})
+			vim.cmd([[colorscheme tokyonight]])
+		end,
 	},
+
 	{
 		"echasnovski/mini.icons",
 		version = false,
 		lazy = false,
-		priority = 1000,
+		priority = 900,
 		config = function()
 			require("mini.icons").setup()
 			MiniIcons.mock_nvim_web_devicons()
 		end,
 	},
+
+	{
+		"nvim-lualine/lualine.nvim",
+		event = "VeryLazy",
+		config = function()
+			require("lualine").setup({
+				options = {
+					theme = "auto",
+					globalstatus = true,
+					component_separators = { left = "", right = "" },
+					section_separators = { left = "", right = "" },
+				},
+				sections = {
+					lualine_a = { "mode" },
+					lualine_b = { "branch", "diff", "diagnostics" },
+					lualine_c = { { "filename", path = 1 } },
+					lualine_x = { "encoding", "fileformat", "filetype" },
+					lualine_y = { "progress" },
+					lualine_z = { "location" },
+				},
+			})
+		end,
+	},
+
 	{
 		"rcarriga/nvim-notify",
+		lazy = false,
+		priority = 800,
 		config = function()
 			require("notify").setup({
 				stages = "fade_in_slide_out",
 				timeout = 3000,
 				background_colour = "#000000",
 				position = "top_right",
+				render = "wrapped-compact",
+				max_width = 50,
 			})
 			vim.notify = require("notify")
 		end,
 	},
+
 	{
-		"NickvanDyke/opencode.nvim",
+		"stevearc/dressing.nvim",
+		event = "VeryLazy",
+		opts = {
+			input = { enabled = true },
+			select = { enabled = true },
+		},
+	},
+
+	{
+		"folke/noice.nvim",
+		event = "VeryLazy",
 		dependencies = {
-			-- Recommended for `ask()` and `select()`.
-			-- Required for `snacks` provider.
-			---@module 'snacks' <- Loads `snacks.nvim` types for configuration intellisense.
+			"MunifTanjim/nui.nvim",
+			"rcarriga/nvim-notify",
+		},
+		opts = {
+			lsp = {
+				override = {
+					["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+					["vim.lsp.util.stylize_markdown"] = true,
+					["cmp.entry.get_documentation"] = true,
+				},
+			},
+			presets = {
+				bottom_search = true,
+				command_palette = true,
+				long_message_to_split = true,
+				inc_rename = false,
+				lsp_doc_border = true,
+			},
+		},
+	},
+
+	-- ========================================================================
+	-- Navigation & Search
+	-- ========================================================================
+	{
+		"folke/snacks.nvim",
+		priority = 1000,
+		lazy = false,
+		opts = {
+			bigfile = { enabled = true },
+			dashboard = { enabled = true },
+			indent = { enabled = true },
+			input = { enabled = true },
+			notifier = { enabled = true },
+			quickfile = { enabled = true },
+			scroll = { enabled = true },
+			statuscolumn = { enabled = true },
+			words = { enabled = true },
+			picker = {
+				icons = { enabled = true },
+				sources = {
+					lsp_symbols = { show_kind = true },
+				},
+			},
+			terminal = { enabled = true },
+		},
+	},
+
+	{
+		"folke/which-key.nvim",
+		event = "VeryLazy",
+		opts = {
+			preset = "modern",
+		},
+	},
+
+	{
+		"folke/flash.nvim",
+		event = "VeryLazy",
+		opts = {},
+		keys = {
 			{
-				"folke/snacks.nvim",
-				opts = {
-					input = {},
-					picker = {
-						icons = {
-							enabled = true,
-						},
-						sources = {
-							lsp_symbols = {
-								show_kind = true,
-							},
-						},
-					},
-					terminal = {},
-					icons = {
-						enabled = true,
-					},
+				"s",
+				mode = { "n", "x", "o" },
+				function()
+					require("flash").jump()
+				end,
+				desc = "Flash",
+			},
+			{
+				"S",
+				mode = { "n", "x", "o" },
+				function()
+					require("flash").treesitter()
+				end,
+				desc = "Flash Treesitter",
+			},
+		},
+	},
+
+	{
+		"nvim-telescope/telescope.nvim",
+		cmd = "Telescope",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+		},
+		config = function()
+			require("telescope").setup({
+				defaults = {
+					prompt_prefix = " ",
+					selection_caret = " ",
+					path_display = { "smart" },
+				},
+			})
+			require("telescope").load_extension("fzf")
+		end,
+	},
+
+	-- ========================================================================
+	-- LSP & Completion
+	-- ========================================================================
+	{
+		"neovim/nvim-lspconfig",
+		dependencies = {
+			"williamboman/mason.nvim",
+			"williamboman/mason-lspconfig.nvim",
+			"ray-x/lsp_signature.nvim",
+			"RRethy/vim-illuminate",
+		},
+	},
+
+	{
+		"williamboman/mason.nvim",
+		cmd = "Mason",
+		build = ":MasonUpdate",
+		opts = {
+			ui = {
+				border = "rounded",
+				icons = {
+					package_installed = "✓",
+					package_pending = "➜",
+					package_uninstalled = "✗",
 				},
 			},
 		},
-		config = function()
-			---@type opencode.Opts
-			vim.g.opencode_opts = {
-				-- Your configuration, if any — see `lua/opencode/config.lua`, or "goto definition".
-			}
+	},
 
-			-- Required for `opts.events.reload`.
+	{
+		"williamboman/mason-lspconfig.nvim",
+		dependencies = { "mason.nvim" },
+	},
+
+	{
+		"hrsh7th/nvim-cmp",
+		event = "InsertEnter",
+		dependencies = {
+			"hrsh7th/cmp-nvim-lsp",
+			"hrsh7th/cmp-buffer",
+			"hrsh7th/cmp-path",
+			"hrsh7th/cmp-cmdline",
+			"saadparwaiz1/cmp_luasnip",
+			"L3MON4D3/LuaSnip",
+			"rafamadriz/friendly-snippets",
+			"onsails/lspkind.nvim",
+		},
+	},
+
+	{
+		"L3MON4D3/LuaSnip",
+		version = "v2.*",
+		build = "make install_jsregexp",
+	},
+
+	-- ========================================================================
+	-- Treesitter
+	-- ========================================================================
+	{
+		"nvim-treesitter/nvim-treesitter",
+		build = ":TSUpdate",
+		event = { "BufReadPost", "BufNewFile" },
+		config = function()
+			require("nvim-treesitter.configs").setup({
+				ensure_installed = {
+					"lua",
+					"vim",
+					"vimdoc",
+					"javascript",
+					"typescript",
+					"tsx",
+					"rust",
+					"json",
+					"yaml",
+					"markdown",
+					"markdown_inline",
+				},
+				auto_install = true,
+				highlight = { enable = true },
+				indent = { enable = true },
+				incremental_selection = {
+					enable = true,
+					keymaps = {
+						init_selection = "<C-space>",
+						node_incremental = "<C-space>",
+						scope_incremental = false,
+						node_decremental = "<bs>",
+					},
+				},
+			})
+		end,
+	},
+
+	{
+		"nvim-treesitter/nvim-treesitter-context",
+		event = { "BufReadPost", "BufNewFile" },
+		opts = { mode = "cursor", max_lines = 3 },
+	},
+
+	-- ========================================================================
+	-- Git
+	-- ========================================================================
+	{
+		"lewis6991/gitsigns.nvim",
+		event = { "BufReadPre", "BufNewFile" },
+		opts = {
+			signs = {
+				add = { text = "│" },
+				change = { text = "│" },
+				delete = { text = "_" },
+				topdelete = { text = "‾" },
+				changedelete = { text = "~" },
+				untracked = { text = "┆" },
+			},
+			on_attach = function(bufnr)
+				local gs = package.loaded.gitsigns
+				local function map(mode, l, r, opts)
+					opts = opts or {}
+					opts.buffer = bufnr
+					vim.keymap.set(mode, l, r, opts)
+				end
+				-- Navigation
+				map("n", "]h", gs.next_hunk, { desc = "Next Hunk" })
+				map("n", "[h", gs.prev_hunk, { desc = "Prev Hunk" })
+				-- Actions
+				map("n", "<leader>hs", gs.stage_hunk, { desc = "Stage Hunk" })
+				map("n", "<leader>hr", gs.reset_hunk, { desc = "Reset Hunk" })
+				map("n", "<leader>hp", gs.preview_hunk, { desc = "Preview Hunk" })
+				map("n", "<leader>hb", gs.blame_line, { desc = "Blame Line" })
+			end,
+		},
+	},
+
+	{
+		"tpope/vim-fugitive",
+		cmd = { "Git", "G" },
+	},
+
+	-- ========================================================================
+	-- Coding Utilities
+	-- ========================================================================
+	{
+		"numToStr/Comment.nvim",
+		event = { "BufReadPost", "BufNewFile" },
+		opts = {},
+	},
+
+	{
+		"kylechui/nvim-surround",
+		event = "VeryLazy",
+		version = "*",
+		opts = {},
+	},
+
+	{
+		"windwp/nvim-autopairs",
+		event = "InsertEnter",
+		config = function()
+			require("nvim-autopairs").setup({})
+			local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+			local cmp = require("cmp")
+			cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
+		end,
+	},
+
+	{
+		"folke/trouble.nvim",
+		cmd = { "Trouble" },
+		opts = {
+			use_diagnostic_signs = true,
+		},
+	},
+
+	{
+		"folke/todo-comments.nvim",
+		event = { "BufReadPost", "BufNewFile" },
+		dependencies = { "nvim-lua/plenary.nvim" },
+		opts = {},
+	},
+
+	-- ========================================================================
+	-- Language Specific
+	-- ========================================================================
+	{
+		"mrcjkb/rustaceanvim",
+		version = "^5",
+		ft = { "rust" },
+		lazy = false,
+	},
+
+	{
+		"nvimtools/none-ls.nvim",
+		event = { "BufReadPre", "BufNewFile" },
+		dependencies = { "nvim-lua/plenary.nvim" },
+	},
+
+	-- ========================================================================
+	-- Utilities
+	-- ========================================================================
+	{
+		"mbbill/undotree",
+		cmd = "UndotreeToggle",
+	},
+
+	{
+		"folke/zen-mode.nvim",
+		cmd = "ZenMode",
+		opts = {
+			window = {
+				width = 0.85,
+			},
+		},
+	},
+
+	{
+		"laytan/cloak.nvim",
+		event = "VeryLazy",
+		opts = {},
+	},
+
+	{
+		"dm1try/golden_size",
+		event = "VeryLazy",
+		config = function()
+			-- Golden ratio automatically resizes windows
+			vim.g.golden_size_center_focus = 1
+		end,
+	},
+
+	-- ========================================================================
+	-- AI
+	-- ========================================================================
+	{
+		"github/copilot.vim",
+		event = "InsertEnter",
+	},
+
+	{
+		"NickvanDyke/opencode.nvim",
+		dependencies = {
+			{ "folke/snacks.nvim" },
+		},
+		config = function()
+			vim.g.opencode_opts = {}
 			vim.o.autoread = true
 
-			-- Recommended/example keymaps.
 			vim.keymap.set({ "n", "x" }, "<C-a>", function()
 				require("opencode").ask("@this: ", { submit = true })
 			end, { desc = "Ask opencode" })
@@ -236,22 +525,12 @@ require("lazy").setup({
 			vim.keymap.set({ "n", "t" }, "<C-.>", function()
 				require("opencode").toggle()
 			end, { desc = "Toggle opencode" })
-
 			vim.keymap.set({ "n", "x" }, "go", function()
 				return require("opencode").operator("@this ")
 			end, { expr = true, desc = "Add range to opencode" })
 			vim.keymap.set("n", "goo", function()
 				return require("opencode").operator("@this ") .. "_"
 			end, { expr = true, desc = "Add line to opencode" })
-
-			vim.keymap.set("n", "<S-C-u>", function()
-				require("opencode").command("session.half.page.up")
-			end, { desc = "opencode half page up" })
-			vim.keymap.set("n", "<S-C-d>", function()
-				require("opencode").command("session.half.page.down")
-			end, { desc = "opencode half page down" })
-
-			-- You may want these if you stick with the opinionated "<C-a>" and "<C-x>" above — otherwise consider "<leader>o".
 			vim.keymap.set("n", "+", "<C-a>", { desc = "Increment", noremap = true })
 			vim.keymap.set("n", "-", "<C-x>", { desc = "Decrement", noremap = true })
 		end,
