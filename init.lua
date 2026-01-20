@@ -57,7 +57,7 @@ opt.pumheight = 10
 
 -- Neovide
 if vim.g.neovide then
-	vim.g.neovide_cursor_vfx_mode = "railgun"
+	vim.g.neovide_cursor_vfx_mode = "pixiedust"
 	vim.g.neovide_input_use_logo = 1
 	opt.guifont = { "Comic Mono", ":h15" }
 end
@@ -104,6 +104,55 @@ require("lazy").setup({
 				},
 			})
 			vim.cmd([[colorscheme tokyonight]])
+		end,
+	},
+
+	{
+		"rose-pine/neovim",
+		name = "rose-pine",
+		lazy = false,
+		priority = 1000,
+		config = function()
+			require("rose-pine").setup({
+				variant = "auto",
+				dark_variant = "main",
+				bold_vert_split = false,
+				dim_nc_background = false,
+				disable_background = false,
+				disable_float_background = false,
+				disable_italics = false,
+
+				groups = {
+					background = "base",
+					background_nc = "_experimental_nc",
+					panel = "surface",
+					panel_nc = "base",
+					border = "highlight_med",
+					comment = "muted",
+					link = "iris",
+					punctuation = "subtle",
+
+					error = "love",
+					hint = "iris",
+					info = "foam",
+					warn = "gold",
+
+					headings = {
+						h1 = "iris",
+						h2 = "foam",
+						h3 = "rose",
+						h4 = "gold",
+						h5 = "pine",
+						h6 = "foam",
+					},
+				},
+
+				highlight_groups = {
+					ColorColumn = { bg = "rose" },
+					CursorLine = { bg = "foam", blend = 10 },
+					StatusLine = { fg = "love", bg = "love", blend = 10 },
+				},
+			})
 		end,
 	},
 
@@ -257,6 +306,7 @@ require("lazy").setup({
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+			{ "nvim-telescope/telescope-file-browser.nvim" },
 		},
 		config = function()
 			require("telescope").setup({
@@ -264,9 +314,25 @@ require("lazy").setup({
 					prompt_prefix = " ",
 					selection_caret = " ",
 					path_display = { "smart" },
+					file_ignore_patterns = { "node_modules", "dist", ".git" },
+				},
+				extensions = {
+					fzf = {
+						fuzzy = true,
+						override_generic_sorter = true,
+						override_file_sorter = true,
+						case_mode = "smart_case",
+					},
+					file_browser = {
+						theme = "ivy",
+						hidden = true,
+						respect_gitignore = false,
+						hijack_netrw = true,
+					},
 				},
 			})
 			require("telescope").load_extension("fzf")
+			require("telescope").load_extension("file_browser")
 		end,
 	},
 

@@ -34,7 +34,11 @@ wk.add({
 	{ "<leader>fb", "<cmd>lua Snacks.picker.buffers()<cr>", desc = "Buffers" },
 	{ "<leader>fg", "<cmd>lua Snacks.picker.grep()<CR>", desc = "Live Grep" },
 	{ "<leader>fw", "<cmd>lua Snacks.picker.grep_word()<cr>", desc = "Grep Word Under Cursor" },
-	{ "<leader>fj", "<cmd>lua Snacks.picker.files({ cwd = vim.fn.expand('%:p:h') })<cr> ", desc = "File Browser" },
+	{
+		"<leader>fj",
+		"<cmd>Telescope file_browser path=%:p:h select_buffer=true<cr>",
+		desc = "File Browser",
+	},
 	{ "<leader>fr", "<cmd>lua Snacks.picker.recent()<cr>", desc = "Open Recent File" },
 	{ "<leader>fn", "<cmd>enew<cr>", desc = "New File" },
 
