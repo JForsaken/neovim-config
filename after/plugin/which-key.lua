@@ -17,90 +17,79 @@ _G.safe_git_status = function()
 	end
 end
 
-wk.register({
-	["<leader>"] = {
-		a = {
-			name = "AI",
-			-- ask @this
-			a = { "<cmd>lua require('opencode').ask('@this: ', { submit = true })<cr>", "Ask opencode" },
-			-- select
-			s = { "<cmd>lua require('opencode').select()<cr>", "Execute opencode action…" },
-			-- toggle
-			t = { "<cmd>lua require('opencode').toggle()<cr>", "Toggle opencode" },
-			-- add range to opencode
-			r = { "<cmd>lua require('opencode').operator('@this ')<cr>", "Add range to opencode" },
-			-- add line to opencode
-			l = { "<cmd>lua require('opencode').operator('@this ') .. '_' <cr>", "Add line to opencode" },
-		},
-		["<TAB>"] = { "<cmd>b#<cr>", "Next Buffer" },
-		f = {
-			name = "File",
-			b = { "<cmd>lua Snacks.picker.buffers()<cr>", "Buffers" },
-			g = { "<cmd>lua Snacks.picker.grep()<CR>", "Live Grep" },
-			w = { "<cmd>lua Snacks.picker.grep_word()<cr>", "Grep Word Under Cursor" },
-			j = { "<cmd>lua Snacks.picker.files({ cwd = vim.fn.expand('%:p:h') })<cr> ", "File Browser" },
-			r = { "<cmd>lua Snacks.picker.recent()<cr>", "Open Recent File" },
-			n = { "<cmd>enew<cr>", "New File" },
-		},
-		w = {
-			name = "Window",
-			h = { "<cmd>wincmd h<cr>", "Left" },
-			j = { "<cmd>wincmd j<cr>", "Down" },
-			k = { "<cmd>wincmd k<cr>", "Up" },
-			l = { "<cmd>wincmd l<cr>", "Right" },
-			["-"] = { "<cmd>split<cr>", "Split" },
-			["/"] = { "<cmd>vsplit<cr>", "VSplit" },
-			q = { "<cmd>q<cr>", "Quit" },
-		},
-		p = {
-			name = "Project",
-			c = { "<cmd>lua safe_git_status()<cr>", "Git Changed Files" },
-			f = { "<cmd>lua Snacks.picker.files({ hidden = true })<cr>", "Find File" },
-			r = { "<cmd>lua Snacks.picker.recent()<cr>", "Open Recent File" },
-			n = { "<cmd>enew<cr>", "New File" },
-		},
-		e = {
-			name = "Error",
-			d = { "<cmd>lua vim.diagnostic.open_float()<cr>", "Details" },
-			l = { "<cmd>lua vim.diagnostic.setloclist()<cr>", "List" },
-			p = { "<cmd>lua Snacks.picker.diagnostics()<cr>", "Picker" },
-			n = { "<cmd>lua vim.diagnostic.goto_next()<cr>", "Next" },
-			N = { "<cmd>lua vim.diagnostic.goto_prev()<cr>", "Previous" },
-		},
-		g = {
-			name = "Git",
-			-- git blame
-			b = { "<cmd>Git blame<cr>", "Blame" },
-			B = { "<cmd>lua Snacks.picker.git_branches()<cr>", "Branches" },
-			c = { "<cmd>lua Snacks.picker.git_log()<cr>", "Commits" },
-			f = { "<cmd>lua Snacks.picker.git_log_file()<cr>", "File History" },
-			g = { "<cmd>lua Snacks.lazygit()<cr>", "Lazygit" },
-			s = { "<cmd>lua safe_git_status()<cr>", "Status" },
-		},
-		m = {
-			c = { "<cmd>CloakToggle<cr>", "Toggle Cloak" },
-			h = { "<cmd>lua Snacks.picker.help()<cr>", "Help" },
-			name = "Mode",
-			n = { "<cmd>lua Snacks.notifier.show_history()<cr>", "Notification History" },
-			s = { "<cmd>lua Snacks.picker.colorschemes()<cr>", "Colorschemes" },
-			g = {
-				name = "Go To",
-				d = { "<cmd>lua vim.lsp.buf.definition()<cr>", "Definition" },
-				r = { "<cmd>lua vim.lsp.buf.references()<cr>", "References" },
-			},
-			r = {
-				name = "Refactor",
-				r = { "<cmd>lua vim.lsp.buf.rename()<cr>", "Rename" },
-			},
-			z = { "<cmd>ZenMode<cr>", "Toggle Zen" },
-		},
-		t = {
-			name = "Tab",
-			["/"] = { "<cmd>$tabnew<cr>", "New Tab" },
-			c = { "<cmd>tabonly<cr>", "Close All But Current Tab" },
-			l = { "<cmd>tabn<cr>", "Next Tab" },
-			h = { "<cmd>tabp<cr>", "Previous Tab" },
-			q = { "<cmd>tabclose<cr>", "Close Tab" },
-		},
-	},
+wk.add({
+	-- AI
+	{ "<leader>a", group = "AI" },
+	{ "<leader>aa", "<cmd>lua require('opencode').ask('@this: ', { submit = true })<cr>", desc = "Ask opencode" },
+	{ "<leader>as", "<cmd>lua require('opencode').select()<cr>", desc = "Execute opencode action…" },
+	{ "<leader>at", "<cmd>lua require('opencode').toggle()<cr>", desc = "Toggle opencode" },
+	{ "<leader>ar", "<cmd>lua require('opencode').operator('@this ')<cr>", desc = "Add range to opencode" },
+	{ "<leader>al", "<cmd>lua require('opencode').operator('@this ') .. '_' <cr>", desc = "Add line to opencode" },
+
+	-- Buffer
+	{ "<leader><TAB>", "<cmd>b#<cr>", desc = "Next Buffer" },
+
+	-- File
+	{ "<leader>f", group = "File" },
+	{ "<leader>fb", "<cmd>lua Snacks.picker.buffers()<cr>", desc = "Buffers" },
+	{ "<leader>fg", "<cmd>lua Snacks.picker.grep()<CR>", desc = "Live Grep" },
+	{ "<leader>fw", "<cmd>lua Snacks.picker.grep_word()<cr>", desc = "Grep Word Under Cursor" },
+	{ "<leader>fj", "<cmd>lua Snacks.picker.files({ cwd = vim.fn.expand('%:p:h') })<cr> ", desc = "File Browser" },
+	{ "<leader>fr", "<cmd>lua Snacks.picker.recent()<cr>", desc = "Open Recent File" },
+	{ "<leader>fn", "<cmd>enew<cr>", desc = "New File" },
+
+	-- Window
+	{ "<leader>w", group = "Window" },
+	{ "<leader>wh", "<cmd>wincmd h<cr>", desc = "Left" },
+	{ "<leader>wj", "<cmd>wincmd j<cr>", desc = "Down" },
+	{ "<leader>wk", "<cmd>wincmd k<cr>", desc = "Up" },
+	{ "<leader>wl", "<cmd>wincmd l<cr>", desc = "Right" },
+	{ "<leader>w-", "<cmd>split<cr>", desc = "Split" },
+	{ "<leader>w/", "<cmd>vsplit<cr>", desc = "VSplit" },
+	{ "<leader>wq", "<cmd>q<cr>", desc = "Quit" },
+
+	-- Project
+	{ "<leader>p", group = "Project" },
+	{ "<leader>pc", "<cmd>lua safe_git_status()<cr>", desc = "Git Changed Files" },
+	{ "<leader>pf", "<cmd>lua Snacks.picker.files({ hidden = true })<cr>", desc = "Find File" },
+	{ "<leader>pr", "<cmd>lua Snacks.picker.recent()<cr>", desc = "Open Recent File" },
+	{ "<leader>pn", "<cmd>enew<cr>", desc = "New File" },
+
+	-- Error
+	{ "<leader>e", group = "Error" },
+	{ "<leader>ed", "<cmd>lua vim.diagnostic.open_float()<cr>", desc = "Details" },
+	{ "<leader>el", "<cmd>lua vim.diagnostic.setloclist()<cr>", desc = "List" },
+	{ "<leader>ep", "<cmd>lua Snacks.picker.diagnostics()<cr>", desc = "Picker" },
+	{ "<leader>en", "<cmd>lua vim.diagnostic.goto_next()<cr>", desc = "Next" },
+	{ "<leader>eN", "<cmd>lua vim.diagnostic.goto_prev()<cr>", desc = "Previous" },
+
+	-- Git
+	{ "<leader>g", group = "Git" },
+	{ "<leader>gb", "<cmd>Git blame<cr>", desc = "Blame" },
+	{ "<leader>gB", "<cmd>lua Snacks.picker.git_branches()<cr>", desc = "Branches" },
+	{ "<leader>gc", "<cmd>lua Snacks.picker.git_log()<cr>", desc = "Commits" },
+	{ "<leader>gf", "<cmd>lua Snacks.picker.git_log_file()<cr>", desc = "File History" },
+	{ "<leader>gg", "<cmd>lua Snacks.lazygit()<cr>", desc = "Lazygit" },
+	{ "<leader>gs", "<cmd>lua safe_git_status()<cr>", desc = "Status" },
+
+	-- Mode
+	{ "<leader>m", group = "Mode" },
+	{ "<leader>mc", "<cmd>CloakToggle<cr>", desc = "Toggle Cloak" },
+	{ "<leader>mh", "<cmd>lua Snacks.picker.help()<cr>", desc = "Help" },
+	{ "<leader>mn", "<cmd>lua Snacks.notifier.show_history()<cr>", desc = "Notification History" },
+	{ "<leader>ms", "<cmd>lua Snacks.picker.colorschemes()<cr>", desc = "Colorschemes" },
+	{ "<leader>mg", group = "Go To" },
+	{ "<leader>mgd", "<cmd>lua vim.lsp.buf.definition()<cr>", desc = "Definition" },
+	{ "<leader>mgr", "<cmd>lua vim.lsp.buf.references()<cr>", desc = "References" },
+	{ "<leader>mr", group = "Refactor" },
+	{ "<leader>mrr", "<cmd>lua vim.lsp.buf.rename()<cr>", desc = "Rename" },
+	{ "<leader>mz", "<cmd>ZenMode<cr>", desc = "Toggle Zen" },
+
+	-- Tab
+	{ "<leader>t", group = "Tab" },
+	{ "<leader>t/", "<cmd>$tabnew<cr>", desc = "New Tab" },
+	{ "<leader>tc", "<cmd>tabonly<cr>", desc = "Close All But Current Tab" },
+	{ "<leader>tl", "<cmd>tabn<cr>", desc = "Next Tab" },
+	{ "<leader>th", "<cmd>tabp<cr>", desc = "Previous Tab" },
+	{ "<leader>tq", "<cmd>tabclose<cr>", desc = "Close Tab" },
 })

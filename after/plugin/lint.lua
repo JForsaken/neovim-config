@@ -10,7 +10,8 @@ local sources = {
 	formatting.stylua,
 	-- formatting.eslint_d,
 	-- diagnostics.eslint_d,
-	formatting.rustfmt,
+	-- rustfmt is handled by rust-tools.nvim instead
+	-- formatting.rustfmt,
 }
 
 lspconfig.ts_ls.setup({
