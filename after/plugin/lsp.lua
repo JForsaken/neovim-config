@@ -50,6 +50,7 @@ local on_attach = function(client, bufnr)
 	vim.keymap.set("n", "<C-h>", vim.lsp.buf.code_action, opts)
 	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
 	vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+	vim.keymap.set("n", "<Tab>", vim.lsp.buf.code_action, opts)
 
 	-- Formatting
 	vim.keymap.set("n", "<leader>lf", function()
