@@ -79,10 +79,11 @@ wk.add({
 	{ "<leader>mn", "<cmd>lua Snacks.notifier.show_history()<cr>", desc = "Notification History" },
 	{ "<leader>ms", "<cmd>lua Snacks.picker.colorschemes()<cr>", desc = "Colorschemes" },
 	{ "<leader>mg", group = "Go To" },
-	{ "<leader>mgd", "<cmd>lua vim.lsp.buf.definition()<cr>", desc = "Definition" },
-	{ "<leader>mgr", "<cmd>lua vim.lsp.buf.references()<cr>", desc = "References" },
+	{ "<leader>mgd", vim.lsp.buf.definition, desc = "Definition" },
+	{ "<leader>mgr", vim.lsp.buf.references, desc = "References" },
+	{ "<leader>mgs", "<cmd>lua Snacks.picker.lsp_symbols()<cr>", desc = "Symbols" },
 	{ "<leader>mr", group = "Refactor" },
-	{ "<leader>mrr", "<cmd>lua vim.lsp.buf.rename()<cr>", desc = "Rename" },
+	{ "<leader>mrr", vim.lsp.buf.rename, desc = "Rename" },
 	{ "<leader>mz", "<cmd>ZenMode<cr>", desc = "Toggle Zen" },
 
 	-- Tab

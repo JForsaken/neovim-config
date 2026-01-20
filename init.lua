@@ -20,6 +20,8 @@ vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
 vim.bo.softtabstop = 2
+-- handle swap files better
+vim.opt.shortmess:append("A") -- don't show swap file warnings
 
 if vim.g.neovide then
 	vim.g.neovide_cursor_vfx_mode = { "pixiedust" }
@@ -82,13 +84,14 @@ require("lazy").setup({
 			{ "williamboman/mason.nvim" }, -- Optional
 			{ "williamboman/mason-lspconfig.nvim" }, -- Optional
 
-			-- Autocompletion
-			{ "hrsh7th/nvim-cmp" }, -- Required
-			{ "hrsh7th/cmp-nvim-lsp" }, -- Required
-			{ "hrsh7th/cmp-buffer" }, -- Optional
-			{ "hrsh7th/cmp-path" }, -- Optional
-			{ "saadparwaiz1/cmp_luasnip" }, -- Optional
-			{ "hrsh7th/cmp-nvim-lua" }, -- Optional
+		-- Autocompletion
+		{ "hrsh7th/nvim-cmp" }, -- Required
+		{ "hrsh7th/cmp-nvim-lsp" }, -- Required
+		{ "hrsh7th/cmp-buffer" }, -- Optional
+		{ "hrsh7th/cmp-path" }, -- Optional
+		{ "hrsh7th/cmp-cmdline" }, -- Optional
+		{ "saadparwaiz1/cmp_luasnip" }, -- Optional
+		{ "hrsh7th/cmp-nvim-lua" }, -- Optional
 
 			-- Snippets
 			{
@@ -159,7 +162,22 @@ require("lazy").setup({
 	{ "Mofiqul/dracula.nvim" },
 	{ "nanozuki/tabby.nvim" },
 	{ "neovim/nvim-lspconfig" },
-	{ "simrat39/rust-tools.nvim" },
+	{
+		"mrcjkb/rustaceanvim",
+		version = "^5",
+		lazy = false,
+		ft = { "rust" },
+	},
+	{
+		"echasnovski/mini.icons",
+		version = false,
+		lazy = false,
+		priority = 1000,
+		config = function()
+			require("mini.icons").setup()
+			MiniIcons.mock_nvim_web_devicons()
+		end,
+	},
 	{
 		"rcarriga/nvim-notify",
 		config = function()
@@ -178,7 +196,26 @@ require("lazy").setup({
 			-- Recommended for `ask()` and `select()`.
 			-- Required for `snacks` provider.
 			---@module 'snacks' <- Loads `snacks.nvim` types for configuration intellisense.
-			{ "folke/snacks.nvim", opts = { input = {}, picker = {}, terminal = {} } },
+			{
+				"folke/snacks.nvim",
+				opts = {
+					input = {},
+					picker = {
+						icons = {
+							enabled = true,
+						},
+						sources = {
+							lsp_symbols = {
+								show_kind = true,
+							},
+						},
+					},
+					terminal = {},
+					icons = {
+						enabled = true,
+					},
+				},
+			},
 		},
 		config = function()
 			---@type opencode.Opts

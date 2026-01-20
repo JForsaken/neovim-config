@@ -1,106 +1,290 @@
-local lsp = require("lsp-zero")
-local lspconfig = require("lspconfig")
+-- ============================================================================
+-- Modern LSP Configuration for Neovim 0.11+
+-- ============================================================================
 
-lsp.preset("recommended")
-
-lsp.ensure_installed({
-	"ts_ls",
-	"rust_analyzer",
+-- Diagnostic configuration
+vim.diagnostic.config({
+	virtual_text = true,
+	signs = true,
+	update_in_insert = false,
+	underline = true,
+	severity_sort = true,
+	float = {
+		border = "rounded",
+		source = "always",
+		header = "",
+		prefix = "",
+	},
 })
 
--- Fix Undefined global 'vim'
-lsp.configure("lua-language-server", {
+-- Diagnostic signs
+local signs = { Error = "E", Warn = "W", Hint = "H", Info = "I" }
+for type, icon in pairs(signs) do
+	local hl = "DiagnosticSign" .. type
+	vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+end
+
+-- ============================================================================
+-- LSP Keymaps and Capabilities
+-- ============================================================================
+
+local on_attach = function(client, bufnr)
+	local opts = { buffer = bufnr, silent = true }
+
+	-- Navigation
+	vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+	vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+	vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+	vim.keymap.set("n", "gt", vim.lsp.buf.type_definition, opts)
+
+	-- Documentation
+	vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+	vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
+
+	-- Code actions
+	vim.keymap.set("n", "<C-h>", vim.lsp.buf.code_action, opts)
+	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+	vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+
+	-- Formatting
+	vim.keymap.set("n", "<leader>lf", function()
+		vim.lsp.buf.format({ async = true })
+	end, opts)
+
+	-- Diagnostics
+	vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
+	vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
+	vim.keymap.set("n", "<leader>ld", vim.diagnostic.open_float, opts)
+	vim.keymap.set("n", "<leader>ll", vim.diagnostic.setloclist, opts)
+
+	-- Enable inlay hints if available (Neovim 0.10+)
+	if client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
+		vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+	end
+
+	-- LSP signature (if available)
+	local ok_sig, lsp_signature = pcall(require, "lsp_signature")
+	if ok_sig then
+		lsp_signature.on_attach({
+			bind = true,
+			handler_opts = {
+				border = "rounded",
+			},
+		}, bufnr)
+	end
+
+	-- Illuminate (if available)
+	local ok_ill, illuminate = pcall(require, "illuminate")
+	if ok_ill then
+		illuminate.on_attach(client)
+	end
+end
+
+-- ============================================================================
+-- Server Configurations
+-- ============================================================================
+
+-- Enable LSP servers
+vim.lsp.enable("lua_ls")
+vim.lsp.enable("ts_ls")
+vim.lsp.enable("solidity")
+
+-- Lua Language Server
+vim.lsp.config("lua_ls", {
+	cmd = { "lua-language-server" },
+	filetypes = { "lua" },
+	root_markers = { ".luarc.json", ".stylua.toml", "stylua.toml", ".git" },
 	settings = {
 		Lua = {
+			runtime = {
+				version = "LuaJIT",
+			},
 			diagnostics = {
 				globals = { "vim" },
 			},
+			workspace = {
+				library = vim.api.nvim_get_runtime_file("", true),
+				checkThirdParty = false,
+			},
+			telemetry = {
+				enable = false,
+			},
+			hint = {
+				enable = true,
+			},
 		},
 	},
+	on_attach = on_attach,
 })
 
-lspconfig.solidity.setup({
+-- TypeScript Language Server
+vim.lsp.config("ts_ls", {
+	cmd = { "typescript-language-server", "--stdio" },
+	filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+	root_markers = { "package.json", "tsconfig.json", "jsconfig.json", ".git" },
+	settings = {
+		typescript = {
+			inlayHints = {
+				includeInlayParameterNameHints = "all",
+				includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+				includeInlayFunctionParameterTypeHints = true,
+				includeInlayVariableTypeHints = true,
+				includeInlayPropertyDeclarationTypeHints = true,
+				includeInlayFunctionLikeReturnTypeHints = true,
+				includeInlayEnumMemberValueHints = true,
+			},
+		},
+		javascript = {
+			inlayHints = {
+				includeInlayParameterNameHints = "all",
+				includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+				includeInlayFunctionParameterTypeHints = true,
+				includeInlayVariableTypeHints = true,
+				includeInlayPropertyDeclarationTypeHints = true,
+				includeInlayFunctionLikeReturnTypeHints = true,
+				includeInlayEnumMemberValueHints = true,
+			},
+		},
+	},
+	on_attach = on_attach,
+})
+
+-- Solidity Language Server
+vim.lsp.config("solidity", {
 	cmd = { "nomicfoundation-solidity-language-server", "--stdio" },
 	filetypes = { "solidity" },
-	root_dir = require("lspconfig.util").find_git_ancestor,
-	single_file_support = true,
+	root_markers = { "hardhat.config.js", "hardhat.config.ts", "foundry.toml", ".git" },
+	on_attach = on_attach,
 })
 
-local cmp = require("cmp")
-local cmp_select = { behavior = cmp.SelectBehavior.Select }
-local cmp_mappings = lsp.defaults.cmp_mappings({
-	["<C-p>"] = cmp.mapping.select_prev_item(cmp_select),
-	["<C-n>"] = cmp.mapping.select_next_item(cmp_select),
-	["<C-y>"] = cmp.mapping.confirm({ select = true }),
-	["<C-Space>"] = cmp.mapping.complete(),
-})
+-- ============================================================================
+-- Rust Configuration (rustaceanvim handles this automatically)
+-- ============================================================================
 
-cmp_mappings["<Tab>"] = nil
-cmp_mappings["<S-Tab>"] = nil
-
-lsp.setup_nvim_cmp({
-	mapping = cmp_mappings,
-})
-
-lsp.set_preferences({
-	suggest_lsp_servers = false,
-	sign_icons = {
-		error = "E",
-		warn = "W",
-		hint = "H",
-		info = "I",
-	},
-})
-
-lsp.on_attach(function(client, bufnr)
-	local opts = { buffer = bufnr, remap = false }
-	vim.keymap.set("n", "gd", function()
-		vim.lsp.buf.definition()
-	end, opts)
-	vim.keymap.set("n", "K", function()
-		vim.lsp.buf.hover()
-	end, opts)
-	vim.keymap.set("n", "<C-h>", function()
-		vim.lsp.buf.code_action()
-	end, opts)
-	vim.keymap.set("n", "<Tab>", function()
-		vim.lsp.buf.code_action()
-	end, opts)
-
-	require("lsp_signature").on_attach({
-		bind = true,
-		handler_opts = {
-			border = "single",
-		},
-	})
-
-	require("illuminate").on_attach(client)
-end)
-
-lsp.setup()
-
-vim.diagnostic.config({
-	virtual_text = true,
-})
-
--- Rust
-local rust_lsp = lsp.build_options("rust_analyzer", {})
-local opts = {
-	tools = { -- rust-tools options
-		inlay_hints = {
-			auto = true,
-			only_current_line = false,
-			show_parameter_hints = true,
-			parameter_hints_prefix = "<- ",
-			other_hints_prefix = "=> ",
-			max_len_align = false,
-			max_len_align_padding = 1,
-			right_align = false,
-			right_align_padding = 7,
-			highlight = "Comment",
+vim.g.rustaceanvim = {
+	server = {
+		on_attach = on_attach,
+		default_settings = {
+			["rust-analyzer"] = {
+				cargo = {
+					allFeatures = true,
+					loadOutDirsFromCheck = true,
+					buildScripts = {
+						enable = true,
+					},
+				},
+				checkOnSave = {
+					command = "clippy",
+					allFeatures = true,
+				},
+				procMacro = {
+					enable = true,
+					ignored = {
+						["async-trait"] = { "async_trait" },
+						["napi-derive"] = { "napi" },
+						["async-recursion"] = { "async_recursion" },
+					},
+				},
+				inlayHints = {
+					bindingModeHints = { enable = false },
+					chainingHints = { enable = true },
+					closingBraceHints = { minLines = 10 },
+					closureReturnTypeHints = { enable = "with_block" },
+					discriminantHints = { enable = "fieldless" },
+					lifetimeElisionHints = { enable = "never" },
+					parameterHints = { enable = true },
+					reborrowHints = { enable = "never" },
+					renderColons = true,
+					typeHints = { enable = true },
+				},
+			},
 		},
 	},
-	server = rust_lsp,
 }
 
-require("rust-tools").setup(opts)
+-- ============================================================================
+-- nvim-cmp Setup
+-- ============================================================================
+
+local cmp = require("cmp")
+local luasnip = require("luasnip")
+
+-- Load friendly snippets
+require("luasnip.loaders.from_vscode").lazy_load()
+
+cmp.setup({
+	snippet = {
+		expand = function(args)
+			luasnip.lsp_expand(args.body)
+		end,
+	},
+	window = {
+		completion = cmp.config.window.bordered(),
+		documentation = cmp.config.window.bordered(),
+	},
+	mapping = cmp.mapping.preset.insert({
+		["<C-b>"] = cmp.mapping.scroll_docs(-4),
+		["<C-f>"] = cmp.mapping.scroll_docs(4),
+		["<C-Space>"] = cmp.mapping.complete(),
+		["<C-e>"] = cmp.mapping.abort(),
+		["<CR>"] = cmp.mapping.confirm({ select = true }),
+		["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
+		["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+		["<C-y>"] = cmp.mapping.confirm({ select = true }),
+		-- Tab and Shift-Tab for snippet navigation
+		["<Tab>"] = cmp.mapping(function(fallback)
+			if cmp.visible() then
+				cmp.select_next_item()
+			elseif luasnip.expand_or_jumpable() then
+				luasnip.expand_or_jump()
+			else
+				fallback()
+			end
+		end, { "i", "s" }),
+		["<S-Tab>"] = cmp.mapping(function(fallback)
+			if cmp.visible() then
+				cmp.select_prev_item()
+			elseif luasnip.jumpable(-1) then
+				luasnip.jump(-1)
+			else
+				fallback()
+			end
+		end, { "i", "s" }),
+	}),
+	sources = cmp.config.sources({
+		{ name = "nvim_lsp", priority = 1000 },
+		{ name = "luasnip", priority = 750 },
+		{ name = "buffer", priority = 500 },
+		{ name = "path", priority = 250 },
+	}),
+	formatting = {
+		format = function(entry, vim_item)
+			vim_item.menu = ({
+				nvim_lsp = "[LSP]",
+				luasnip = "[Snippet]",
+				buffer = "[Buffer]",
+				path = "[Path]",
+			})[entry.source.name]
+			return vim_item
+		end,
+	},
+})
+
+-- Use buffer source for `/` and `?`
+cmp.setup.cmdline({ "/", "?" }, {
+	mapping = cmp.mapping.preset.cmdline(),
+	sources = {
+		{ name = "buffer" },
+	},
+})
+
+-- Use cmdline & path source for ':'
+cmp.setup.cmdline(":", {
+	mapping = cmp.mapping.preset.cmdline(),
+	sources = cmp.config.sources({
+		{ name = "path" },
+	}, {
+		{ name = "cmdline" },
+	}),
+})

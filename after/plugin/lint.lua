@@ -2,7 +2,6 @@ local null_ls = require("null-ls")
 local formatting = null_ls.builtins.formatting
 local diagnostics = null_ls.builtins.diagnostics
 local completion = null_ls.builtins.completion
-local lspconfig = require("lspconfig")
 
 local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 
@@ -14,13 +13,22 @@ local sources = {
 	-- formatting.rustfmt,
 }
 
-lspconfig.ts_ls.setup({
+-- Setup ts_ls with new vim.lsp.config API (Neovim 0.11+)
+vim.lsp.config("ts_ls", {
+	cmd = { "typescript-language-server", "--stdio" },
+	filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+	root_markers = { "package.json", "tsconfig.json", "jsconfig.json", ".git" },
 	on_attach = function(client)
-		client.resolved_capabilities.document_formatting = false
+		client.server_capabilities.documentFormattingProvider = false
 	end,
 })
 
-lspconfig.biome.setup({})
+-- Setup biome with new vim.lsp.config API
+vim.lsp.config("biome", {
+	cmd = { "biome", "lsp-proxy" },
+	filetypes = { "javascript", "javascriptreact", "json", "jsonc", "typescript", "typescriptreact" },
+	root_markers = { "biome.json", "biome.jsonc" },
+})
 
 null_ls.setup({
 	debug = false,
