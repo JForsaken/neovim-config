@@ -35,7 +35,9 @@ wk.register({
 		["<TAB>"] = { "<cmd>b#<cr>", "Next Buffer" },
 		f = {
 			name = "File",
+			b = { "<cmd>lua Snacks.picker.buffers()<cr>", "Buffers" },
 			g = { "<cmd>lua Snacks.picker.grep()<CR>", "Live Grep" },
+			w = { "<cmd>lua Snacks.picker.grep_word()<cr>", "Grep Word Under Cursor" },
 			j = { "<cmd>lua Snacks.picker.files({ cwd = vim.fn.expand('%:p:h') })<cr> ", "File Browser" },
 			r = { "<cmd>lua Snacks.picker.recent()<cr>", "Open Recent File" },
 			n = { "<cmd>enew<cr>", "New File" },
@@ -61,6 +63,7 @@ wk.register({
 			name = "Error",
 			d = { "<cmd>lua vim.diagnostic.open_float()<cr>", "Details" },
 			l = { "<cmd>lua vim.diagnostic.setloclist()<cr>", "List" },
+			p = { "<cmd>lua Snacks.picker.diagnostics()<cr>", "Picker" },
 			n = { "<cmd>lua vim.diagnostic.goto_next()<cr>", "Next" },
 			N = { "<cmd>lua vim.diagnostic.goto_prev()<cr>", "Previous" },
 		},
@@ -68,12 +71,18 @@ wk.register({
 			name = "Git",
 			-- git blame
 			b = { "<cmd>Git blame<cr>", "Blame" },
+			B = { "<cmd>lua Snacks.picker.git_branches()<cr>", "Branches" },
 			c = { "<cmd>lua Snacks.picker.git_log()<cr>", "Commits" },
+			f = { "<cmd>lua Snacks.picker.git_log_file()<cr>", "File History" },
+			g = { "<cmd>lua Snacks.lazygit()<cr>", "Lazygit" },
 			s = { "<cmd>lua safe_git_status()<cr>", "Status" },
 		},
 		m = {
 			c = { "<cmd>CloakToggle<cr>", "Toggle Cloak" },
+			h = { "<cmd>lua Snacks.picker.help()<cr>", "Help" },
 			name = "Mode",
+			n = { "<cmd>lua Snacks.notifier.show_history()<cr>", "Notification History" },
+			s = { "<cmd>lua Snacks.picker.colorschemes()<cr>", "Colorschemes" },
 			g = {
 				name = "Go To",
 				d = { "<cmd>lua vim.lsp.buf.definition()<cr>", "Definition" },
