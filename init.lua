@@ -312,9 +312,12 @@ require("lazy").setup({
 			require("telescope").setup({
 				defaults = {
 					prompt_prefix = " ",
-					selection_caret = " ",
+					selection_caret = "  ",
+					entry_prefix = "  ",
 					path_display = { "smart" },
 					file_ignore_patterns = { "node_modules", "dist", ".git" },
+					results_title = false,
+					dynamic_preview_title = true,
 				},
 				extensions = {
 					fzf = {
@@ -323,12 +326,22 @@ require("lazy").setup({
 						override_file_sorter = true,
 						case_mode = "smart_case",
 					},
-					file_browser = {
-						theme = "ivy",
-						hidden = true,
-						respect_gitignore = false,
-						hijack_netrw = true,
+				file_browser = {
+					theme = "ivy",
+					hidden = true,
+					respect_gitignore = false,
+					hijack_netrw = true,
+					initial_mode = "normal",
+					layout_config = {
+						preview_width = 0.5,
 					},
+					display_stat = false,
+					dir_icon = "",
+					dir_icon_hl = "Default",
+					grouped = true,
+					select_buffer = true,
+					hide_parent_dir = false,
+				},
 				},
 			})
 			require("telescope").load_extension("fzf")
