@@ -5,27 +5,29 @@ if not ok then
 end
 
 local formatting = null_ls.builtins.formatting
-local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 
 local sources = {
 	formatting.stylua, -- Lua formatting
 	formatting.biome, -- JS/TS formatting
-	-- Add more formatters as needed
 }
 
 null_ls.setup({
 	debug = false,
 	sources = sources,
-	on_attach = function(client, bufnr)
-		if client.supports_method("textDocument/formatting") then
-			vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-			vim.api.nvim_create_autocmd("BufWritePre", {
-				group = augroup,
-				buffer = bufnr,
-				callback = function()
-					vim.lsp.buf.format({ bufnr = bufnr, async = false })
-				end,
-			})
-		end
+})
+
+-- Format on save for supported filetypes (use null-ls/biome specifically)
+local format_group = vim.api.nvim_create_augroup("FormatOnSave", { clear = true })
+vim.api.nvim_create_autocmd("BufWritePre", {
+	group = format_group,
+	pattern = { "*.js", "*.jsx", "*.ts", "*.tsx", "*.json", "*.lua", "*.css", "*.graphql" },
+	callback = function()
+		vim.lsp.buf.format({
+			async = false,
+			filter = function(client)
+				-- Only use null-ls for formatting
+				return client.name == "null-ls"
+			end,
+		})
 	end,
 })
