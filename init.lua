@@ -161,6 +161,18 @@ require("lazy").setup({
 	{ "neovim/nvim-lspconfig" },
 	{ "simrat39/rust-tools.nvim" },
 	{
+		"rcarriga/nvim-notify",
+		config = function()
+			require("notify").setup({
+				stages = "fade_in_slide_out",
+				timeout = 3000,
+				background_colour = "#000000",
+				position = "top_right",
+			})
+			vim.notify = require("notify")
+		end,
+	},
+	{
 		"NickvanDyke/opencode.nvim",
 		dependencies = {
 			-- Recommended for `ask()` and `select()`.

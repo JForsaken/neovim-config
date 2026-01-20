@@ -1,5 +1,22 @@
 local wk = require("which-key")
 
+-- Wrapper for git_status that handles no changes
+_G.safe_git_status = function()
+	local handle = io.popen("git status --porcelain 2>/dev/null")
+	if not handle then
+		vim.notify("Not a git repository", vim.log.levels.WARN)
+		return
+	end
+	local result = handle:read("*a")
+	handle:close()
+
+	if result == "" then
+		vim.notify("No files changed", vim.log.levels.INFO)
+	else
+		Snacks.picker.git_status()
+	end
+end
+
 wk.register({
 	["<leader>"] = {
 		a = {
@@ -18,9 +35,9 @@ wk.register({
 		["<TAB>"] = { "<cmd>b#<cr>", "Next Buffer" },
 		f = {
 			name = "File",
-			g = { "<cmd>lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>", "Live Grep" },
-			j = { "<cmd>Telescope file_browser path=%:p:h<cr> ", "File Browser" },
-			r = { "<cmd>Telescope oldfiles<cr>", "Open Recent File" },
+			g = { "<cmd>lua Snacks.picker.grep()<CR>", "Live Grep" },
+			j = { "<cmd>lua Snacks.picker.files({ cwd = vim.fn.expand('%:p:h') })<cr> ", "File Browser" },
+			r = { "<cmd>lua Snacks.picker.recent()<cr>", "Open Recent File" },
 			n = { "<cmd>enew<cr>", "New File" },
 		},
 		w = {
@@ -35,8 +52,9 @@ wk.register({
 		},
 		p = {
 			name = "Project",
-			f = { "<cmd>Telescope find_files hidden=true<cr>", "Find File" },
-			r = { "<cmd>Telescope oldfiles<cr>", "Open Recent File" },
+			c = { "<cmd>lua safe_git_status()<cr>", "Git Changed Files" },
+			f = { "<cmd>lua Snacks.picker.files({ hidden = true })<cr>", "Find File" },
+			r = { "<cmd>lua Snacks.picker.recent()<cr>", "Open Recent File" },
 			n = { "<cmd>enew<cr>", "New File" },
 		},
 		e = {
@@ -50,8 +68,8 @@ wk.register({
 			name = "Git",
 			-- git blame
 			b = { "<cmd>Git blame<cr>", "Blame" },
-			c = { "<cmd>Telescope git_commits<cr>", "Commits" },
-			s = { "<cmd>Telescope git_status<cr>", "Status" },
+			c = { "<cmd>lua Snacks.picker.git_log()<cr>", "Commits" },
+			s = { "<cmd>lua safe_git_status()<cr>", "Status" },
 		},
 		m = {
 			c = { "<cmd>CloakToggle<cr>", "Toggle Cloak" },
