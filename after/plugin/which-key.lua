@@ -36,7 +36,7 @@ wk.add({
 	{ "<leader>fw", "<cmd>lua Snacks.picker.grep_word()<cr>", desc = "Grep Word Under Cursor" },
 	{
 		"<leader>ff",
-		"<cmd>lua Snacks.picker.files({ cwd = vim.fn.expand('%:p:h') } })<cr>",
+		"<cmd>lua Snacks.picker.files({ cwd = vim.fn.expand('%:p:h') })<cr>",
 		desc = "Find in File Directory",
 	},
 	{
