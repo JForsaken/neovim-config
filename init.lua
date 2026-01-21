@@ -257,6 +257,7 @@ require("lazy").setup({
 		opts = {
 			bigfile = { enabled = true },
 			dashboard = { enabled = true },
+			explorer = { enabled = true },
 			indent = { enabled = true },
 			input = { enabled = true },
 			notifier = { enabled = true },
@@ -268,6 +269,10 @@ require("lazy").setup({
 				icons = { enabled = true },
 				sources = {
 					lsp_symbols = { show_kind = true },
+					explorer = {
+						hidden = true,
+						follow_file = true,
+					},
 				},
 			},
 			terminal = { enabled = true },
@@ -347,6 +352,8 @@ require("lazy").setup({
 					grouped = true,
 					select_buffer = true,
 					hide_parent_dir = false,
+					use_fd = true,
+					prompt_path = true,
 				},
 				},
 			})

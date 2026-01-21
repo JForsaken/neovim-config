@@ -36,8 +36,8 @@ wk.add({
 	{ "<leader>fw", "<cmd>lua Snacks.picker.grep_word()<cr>", desc = "Grep Word Under Cursor" },
 	{
 		"<leader>fj",
-		"<cmd>Telescope file_browser path=%:p:h select_buffer=true<cr>",
-		desc = "File Browser",
+		"<cmd>lua Snacks.explorer()<cr>",
+		desc = "File Explorer",
 	},
 	{ "<leader>fr", "<cmd>lua Snacks.picker.recent()<cr>", desc = "Open Recent File" },
 	{ "<leader>fn", "<cmd>enew<cr>", desc = "New File" },
