@@ -63,10 +63,10 @@ local on_attach = function(client, bufnr)
 	vim.keymap.set("n", "<leader>ld", vim.diagnostic.open_float, opts)
 	vim.keymap.set("n", "<leader>ll", vim.diagnostic.setloclist, opts)
 
-	-- Enable inlay hints if available (Neovim 0.10+)
-	if client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
-		vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
-	end
+	-- Inlay hints disabled (uncomment to enable)
+	-- if client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
+	-- 	vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+	-- end
 
 	-- LSP signature (if available)
 	local ok_sig, lsp_signature = pcall(require, "lsp_signature")
