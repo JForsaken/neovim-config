@@ -337,24 +337,24 @@ require("lazy").setup({
 						override_file_sorter = true,
 						case_mode = "smart_case",
 					},
-				file_browser = {
-					theme = "ivy",
-					hidden = true,
-					respect_gitignore = false,
-					hijack_netrw = true,
-					initial_mode = "normal",
-					layout_config = {
-						preview_width = 0.5,
+					file_browser = {
+						theme = "ivy",
+						hidden = true,
+						respect_gitignore = false,
+						hijack_netrw = true,
+						initial_mode = "normal",
+						layout_config = {
+							preview_width = 0.5,
+						},
+						display_stat = false,
+						dir_icon = "",
+						dir_icon_hl = "Default",
+						grouped = true,
+						select_buffer = true,
+						hide_parent_dir = false,
+						use_fd = true,
+						prompt_path = true,
 					},
-					display_stat = false,
-					dir_icon = "",
-					dir_icon_hl = "Default",
-					grouped = true,
-					select_buffer = true,
-					hide_parent_dir = false,
-					use_fd = true,
-					prompt_path = true,
-				},
 				},
 			})
 			require("telescope").load_extension("fzf")
@@ -441,24 +441,24 @@ require("lazy").setup({
 					["<Down>"] = cmp.mapping.select_next_item(),
 					["<C-n>"] = cmp.mapping.select_next_item(),
 					["<C-p>"] = cmp.mapping.select_prev_item(),
-					["<Tab>"] = cmp.mapping(function(fallback)
-						if cmp.visible() then
-							cmp.select_next_item()
-						elseif luasnip.expand_or_jumpable() then
-							luasnip.expand_or_jump()
-						else
-							fallback()
-						end
-					end, { "i", "s" }),
-					["<S-Tab>"] = cmp.mapping(function(fallback)
-						if cmp.visible() then
-							cmp.select_prev_item()
-						elseif luasnip.jumpable(-1) then
-							luasnip.jump(-1)
-						else
-							fallback()
-						end
-					end, { "i", "s" }),
+					-- ["<Tab>"] = cmp.mapping(function(fallback)
+					-- 	if cmp.visible() then
+					-- 		cmp.select_next_item()
+					-- 	elseif luasnip.expand_or_jumpable() then
+					-- 		luasnip.expand_or_jump()
+					-- 	else
+					-- 		fallback()
+					-- 	end
+					-- end, { "i", "s" }),
+					-- ["<S-Tab>"] = cmp.mapping(function(fallback)
+					-- 	if cmp.visible() then
+					-- 		cmp.select_prev_item()
+					-- 	elseif luasnip.jumpable(-1) then
+					-- 		luasnip.jump(-1)
+					-- 	else
+					-- 		fallback()
+					-- 	end
+					-- end, { "i", "s" }),
 				}),
 				sources = cmp.config.sources({
 					{ name = "nvim_lsp" },
