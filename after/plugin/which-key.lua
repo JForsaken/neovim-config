@@ -35,8 +35,13 @@ wk.add({
 	{ "<leader>fg", "<cmd>lua Snacks.picker.grep()<CR>", desc = "Live Grep" },
 	{ "<leader>fw", "<cmd>lua Snacks.picker.grep_word()<cr>", desc = "Grep Word Under Cursor" },
 	{
+		"<leader>ff",
+		"<cmd>lua Snacks.picker.files({ cwd = vim.fn.expand('%:p:h') } })<cr>",
+		desc = "Find in File Directory",
+	},
+	{
 		"<leader>fj",
-		"<cmd>lua Snacks.explorer()<cr>",
+		"<cmd>lua Snacks.explorer.reveal()<cr>",
 		desc = "File Explorer",
 	},
 	{ "<leader>fr", "<cmd>lua Snacks.picker.recent()<cr>", desc = "Open Recent File" },
