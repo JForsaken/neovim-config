@@ -62,6 +62,12 @@ if vim.g.neovide then
 	opt.guifont = { "Comic Mono", ":h15" }
 end
 
+-- Cmd+V paste support (for terminals that send <D-v>)
+vim.keymap.set({ "n", "v" }, "<D-v>", '"+p', { desc = "Paste from clipboard" })
+vim.keymap.set("i", "<D-v>", "<C-r>+", { desc = "Paste from clipboard" })
+vim.keymap.set("c", "<D-v>", "<C-r>+", { desc = "Paste from clipboard" })
+vim.keymap.set("t", "<D-v>", '<C-\\><C-n>"+pa', { desc = "Paste from clipboard" })
+
 -- Disable netrw (we'll use modern file explorers)
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
