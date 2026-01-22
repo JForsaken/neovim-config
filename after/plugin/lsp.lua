@@ -109,10 +109,13 @@ vim.lsp.config("lua_ls", {
 			diagnostics = {
 				globals = { "vim" },
 			},
-			workspace = {
-				library = vim.api.nvim_get_runtime_file("", true),
-				checkThirdParty = false,
+		workspace = {
+			library = {
+				vim.env.VIMRUNTIME,
+				"${3rd}/luv/library",
 			},
+			checkThirdParty = false,
+		},
 			telemetry = {
 				enable = false,
 			},
@@ -132,25 +135,33 @@ vim.lsp.config("ts_ls", {
 	capabilities = capabilities,
 	settings = {
 		typescript = {
+			-- Performance optimizations
+			suggest = {
+				completeFunctionCalls = false,
+			},
+			-- Disable inlay hints for better performance (you can enable selectively if needed)
 			inlayHints = {
-				includeInlayParameterNameHints = "all",
+				includeInlayParameterNameHints = "none",
 				includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-				includeInlayFunctionParameterTypeHints = true,
-				includeInlayVariableTypeHints = true,
-				includeInlayPropertyDeclarationTypeHints = true,
-				includeInlayFunctionLikeReturnTypeHints = true,
-				includeInlayEnumMemberValueHints = true,
+				includeInlayFunctionParameterTypeHints = false,
+				includeInlayVariableTypeHints = false,
+				includeInlayPropertyDeclarationTypeHints = false,
+				includeInlayFunctionLikeReturnTypeHints = false,
+				includeInlayEnumMemberValueHints = false,
 			},
 		},
 		javascript = {
+			suggest = {
+				completeFunctionCalls = false,
+			},
 			inlayHints = {
-				includeInlayParameterNameHints = "all",
+				includeInlayParameterNameHints = "none",
 				includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-				includeInlayFunctionParameterTypeHints = true,
-				includeInlayVariableTypeHints = true,
-				includeInlayPropertyDeclarationTypeHints = true,
-				includeInlayFunctionLikeReturnTypeHints = true,
-				includeInlayEnumMemberValueHints = true,
+				includeInlayFunctionParameterTypeHints = false,
+				includeInlayVariableTypeHints = false,
+				includeInlayPropertyDeclarationTypeHints = false,
+				includeInlayFunctionLikeReturnTypeHints = false,
+				includeInlayEnumMemberValueHints = false,
 			},
 		},
 	},
