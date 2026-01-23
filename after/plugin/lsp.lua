@@ -2,11 +2,26 @@
 -- Modern LSP Configuration for Neovim 0.11+
 -- ============================================================================
 
+-- Set LSP log level to ERROR to prevent massive log files
+vim.lsp.set_log_level("ERROR")
+
+-- Performance: Debounce diagnostics to reduce CPU usage
+local function debounce(fn, ms)
+	local timer = vim.uv.new_timer()
+	return function(...)
+		local args = { ... }
+		timer:stop()
+		timer:start(ms, 0, vim.schedule_wrap(function()
+			fn(unpack(args))
+		end))
+	end
+end
+
 -- Diagnostic configuration
 vim.diagnostic.config({
 	virtual_text = true,
 	signs = true,
-	update_in_insert = false,
+	update_in_insert = false, -- Don't update diagnostics while typing
 	underline = true,
 	severity_sort = true,
 	float = {
@@ -33,6 +48,11 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 
 local on_attach = function(client, bufnr)
+	-- Disable file watchers for better performance (already shown as disabled in :LspInfo)
+	if client.server_capabilities.workspace then
+		client.server_capabilities.workspace.didChangeWatchedFiles = false
+	end
+
 	local opts = { buffer = bufnr, silent = true }
 
 	-- Navigation
@@ -109,20 +129,28 @@ vim.lsp.config("lua_ls", {
 			diagnostics = {
 				globals = { "vim" },
 			},
-		workspace = {
-			library = {
-				vim.env.VIMRUNTIME,
-				"${3rd}/luv/library",
+			workspace = {
+				library = {
+					vim.env.VIMRUNTIME,
+					"${3rd}/luv/library",
+				},
+				checkThirdParty = false,
 			},
-			checkThirdParty = false,
-		},
 			telemetry = {
 				enable = false,
 			},
 			hint = {
 				enable = true,
 			},
+			-- Performance optimizations
+			completion = {
+				callSnippet = "Replace",
+			},
 		},
+	},
+	flags = {
+		debounce_text_changes = 150,
+		allow_incremental_sync = true,
 	},
 	on_attach = on_attach,
 })
@@ -139,7 +167,7 @@ vim.lsp.config("ts_ls", {
 			suggest = {
 				completeFunctionCalls = false,
 			},
-			-- Disable inlay hints for better performance (you can enable selectively if needed)
+			-- Disable inlay hints for better performance
 			inlayHints = {
 				includeInlayParameterNameHints = "none",
 				includeInlayParameterNameHintsWhenArgumentMatchesName = false,
@@ -149,6 +177,10 @@ vim.lsp.config("ts_ls", {
 				includeInlayFunctionLikeReturnTypeHints = false,
 				includeInlayEnumMemberValueHints = false,
 			},
+			-- Reduce max file size for better performance on large projects
+			maxTsServerMemory = 4096,
+			-- Disable automatic type acquisition
+			disableAutomaticTypeAcquisition = true,
 		},
 		javascript = {
 			suggest = {
@@ -163,7 +195,14 @@ vim.lsp.config("ts_ls", {
 				includeInlayFunctionLikeReturnTypeHints = false,
 				includeInlayEnumMemberValueHints = false,
 			},
+			maxTsServerMemory = 4096,
+			disableAutomaticTypeAcquisition = true,
 		},
+	},
+	-- Add flags for better performance
+	flags = {
+		debounce_text_changes = 150, -- Debounce text changes
+		allow_incremental_sync = true, -- Use incremental sync for better performance
 	},
 	on_attach = on_attach,
 })
@@ -174,6 +213,10 @@ vim.lsp.config("solidity", {
 	filetypes = { "solidity" },
 	root_markers = { "hardhat.config.js", "hardhat.config.ts", "foundry.toml", ".git" },
 	capabilities = capabilities,
+	flags = {
+		debounce_text_changes = 150,
+		allow_incremental_sync = true,
+	},
 	on_attach = on_attach,
 })
 

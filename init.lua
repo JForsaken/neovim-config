@@ -398,18 +398,17 @@ require("lazy").setup({
 	-- ========================================================================
 	{
 		"neovim/nvim-lspconfig",
-		event = { "BufReadPost", "BufNewFile" },
+		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
 		dependencies = {
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
-			"ray-x/lsp_signature.nvim",
-			"RRethy/vim-illuminate",
 		},
 	},
 
 	{
 		"williamboman/mason.nvim",
 		cmd = "Mason",
+		lazy = true,
 		build = ":MasonUpdate",
 		opts = {
 			ui = {
@@ -420,12 +419,28 @@ require("lazy").setup({
 					package_uninstalled = "✗",
 				},
 			},
+			-- Performance: limit concurrent installs
+			max_concurrent_installers = 4,
 		},
 	},
 
 	{
 		"williamboman/mason-lspconfig.nvim",
+		lazy = true,
 		dependencies = { "mason.nvim" },
+	},
+
+	-- Optional LSP enhancements (only load if needed)
+	{
+		"ray-x/lsp_signature.nvim",
+		event = "LspAttach",
+		lazy = true,
+	},
+
+	{
+		"RRethy/vim-illuminate",
+		event = "LspAttach",
+		lazy = true,
 	},
 
 	{
