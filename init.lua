@@ -231,18 +231,21 @@ require("lazy").setup({
 		},
 		opts = {
 			lsp = {
+				-- Disable LSP overrides - these add latency to hover/signature
 				override = {
-					["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-					["vim.lsp.util.stylize_markdown"] = true,
-					["cmp.entry.get_documentation"] = true,
+					["vim.lsp.util.convert_input_to_markdown_lines"] = false,
+					["vim.lsp.util.stylize_markdown"] = false,
+					["cmp.entry.get_documentation"] = false,
 				},
+				hover = { enabled = false }, -- Use native hover
+				signature = { enabled = false }, -- Use native signature
 			},
 			presets = {
 				bottom_search = true,
 				command_palette = true,
 				long_message_to_split = true,
 				inc_rename = false,
-				lsp_doc_border = true,
+				lsp_doc_border = false, -- Native borders are faster
 			},
 		},
 	},
@@ -264,7 +267,7 @@ require("lazy").setup({
 			quickfile = { enabled = true },
 			scroll = { enabled = true },
 			statuscolumn = { enabled = true },
-			words = { enabled = true },
+			words = { enabled = false }, -- Disable: conflicts with vim-illuminate
 			picker = {
 				icons = { enabled = true },
 				sources = {
@@ -430,17 +433,21 @@ require("lazy").setup({
 		dependencies = { "mason.nvim" },
 	},
 
-	-- Optional LSP enhancements (only load if needed)
-	{
-		"ray-x/lsp_signature.nvim",
-		event = "LspAttach",
-		lazy = true,
-	},
-
+	-- vim-illuminate for reference highlighting
 	{
 		"RRethy/vim-illuminate",
 		event = "LspAttach",
 		lazy = true,
+		config = function()
+			require("illuminate").configure({
+				delay = 200, -- Delay before highlighting (ms)
+				under_cursor = true,
+				-- Limit to LSP references only (faster than treesitter+regex)
+				providers = { "lsp" },
+				-- Don't highlight in large files
+				large_file_cutoff = 2000,
+			})
+		end,
 	},
 
 	{

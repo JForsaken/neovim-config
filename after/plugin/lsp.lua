@@ -5,6 +5,28 @@
 -- Set LSP log level to ERROR to prevent massive log files
 vim.lsp.set_log_level("ERROR")
 
+-- ============================================================================
+-- Performance: Optimize LSP handlers
+-- ============================================================================
+
+-- Faster hover - disable markdown parsing when possible
+vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+	border = "rounded",
+	max_width = 80,
+	max_height = 20,
+	focusable = true,
+	silent = true,
+})
+
+-- Faster signature help
+vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
+	border = "rounded",
+	max_width = 80,
+	max_height = 12,
+	focusable = false,
+	silent = true,
+})
+
 -- Performance: Debounce diagnostics to reduce CPU usage
 local function debounce(fn, ms)
 	local timer = vim.uv.new_timer()
@@ -88,18 +110,10 @@ local on_attach = function(client, bufnr)
 	-- 	vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
 	-- end
 
-	-- LSP signature (if available)
-	local ok_sig, lsp_signature = pcall(require, "lsp_signature")
-	if ok_sig then
-		lsp_signature.on_attach({
-			bind = true,
-			handler_opts = {
-				border = "rounded",
-			},
-		}, bufnr)
-	end
+	-- NOTE: lsp_signature removed from on_attach - use <C-k> for signature help instead
+	-- This reduces latency on every LSP operation
 
-	-- Illuminate (if available)
+	-- Illuminate for reference highlighting (use this OR snacks.words, not both)
 	local ok_ill, illuminate = pcall(require, "illuminate")
 	if ok_ill then
 		illuminate.on_attach(client)
@@ -161,13 +175,23 @@ vim.lsp.config("ts_ls", {
 	filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
 	root_markers = { "package.json", "tsconfig.json", "jsconfig.json", ".git" },
 	capabilities = capabilities,
+	-- initializationOptions is where typescript-language-server reads these settings
+	initializationOptions = {
+		maxTsServerMemory = 8192, -- Increase memory limit for large projects
+		disableAutomaticTypeAcquisition = true,
+		preferences = {
+			includeCompletionsForModuleExports = false, -- Faster completions
+			includeCompletionsWithSnippetText = false,
+		},
+		tsserver = {
+			logVerbosity = "off", -- Disable tsserver logging
+		},
+	},
 	settings = {
 		typescript = {
-			-- Performance optimizations
 			suggest = {
 				completeFunctionCalls = false,
 			},
-			-- Disable inlay hints for better performance
 			inlayHints = {
 				includeInlayParameterNameHints = "none",
 				includeInlayParameterNameHintsWhenArgumentMatchesName = false,
@@ -177,10 +201,6 @@ vim.lsp.config("ts_ls", {
 				includeInlayFunctionLikeReturnTypeHints = false,
 				includeInlayEnumMemberValueHints = false,
 			},
-			-- Reduce max file size for better performance on large projects
-			maxTsServerMemory = 4096,
-			-- Disable automatic type acquisition
-			disableAutomaticTypeAcquisition = true,
 		},
 		javascript = {
 			suggest = {
@@ -195,14 +215,11 @@ vim.lsp.config("ts_ls", {
 				includeInlayFunctionLikeReturnTypeHints = false,
 				includeInlayEnumMemberValueHints = false,
 			},
-			maxTsServerMemory = 4096,
-			disableAutomaticTypeAcquisition = true,
 		},
 	},
-	-- Add flags for better performance
 	flags = {
-		debounce_text_changes = 150, -- Debounce text changes
-		allow_incremental_sync = true, -- Use incremental sync for better performance
+		debounce_text_changes = 150,
+		allow_incremental_sync = true,
 	},
 	on_attach = on_attach,
 })
