@@ -77,8 +77,12 @@ wk.add({
 	{ "<leader>gb", "<cmd>Git blame<cr>", desc = "Blame" },
 	{ "<leader>gB", "<cmd>lua Snacks.picker.git_branches()<cr>", desc = "Branches" },
 	{ "<leader>gc", "<cmd>lua Snacks.picker.git_log()<cr>", desc = "Commits" },
+	{ "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "Diff View" },
 	{ "<leader>gf", "<cmd>lua Snacks.picker.git_log_file()<cr>", desc = "File History" },
 	{ "<leader>gg", "<cmd>lua Snacks.lazygit()<cr>", desc = "Lazygit" },
+	{ "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", desc = "File Diff History" },
+	{ "<leader>gH", "<cmd>DiffviewFileHistory<cr>", desc = "Branch Diff History" },
+	{ "<leader>gq", "<cmd>DiffviewClose<cr>", desc = "Close Diff View" },
 	{ "<leader>gs", "<cmd>lua safe_git_status()<cr>", desc = "Status" },
 
 	-- Mode
