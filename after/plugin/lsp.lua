@@ -126,7 +126,7 @@ end
 
 -- Enable LSP servers
 vim.lsp.enable("lua_ls")
-vim.lsp.enable("ts_ls")
+vim.lsp.enable("vtsls")
 vim.lsp.enable("solidity")
 
 -- Lua Language Server
@@ -169,51 +169,56 @@ vim.lsp.config("lua_ls", {
 	on_attach = on_attach,
 })
 
--- TypeScript Language Server
-vim.lsp.config("ts_ls", {
-	cmd = { "typescript-language-server", "--stdio" },
+-- TypeScript/JavaScript Language Server (vtsls - fastest tsserver wrapper)
+vim.lsp.config("vtsls", {
+	cmd = { "vtsls", "--stdio" },
 	filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
-	root_markers = { "package.json", "tsconfig.json", "jsconfig.json", ".git" },
+	root_markers = { "tsconfig.json", "jsconfig.json", "package.json", ".git" },
 	capabilities = capabilities,
-	-- initializationOptions is where typescript-language-server reads these settings
-	initializationOptions = {
-		maxTsServerMemory = 8192, -- Increase memory limit for large projects
-		disableAutomaticTypeAcquisition = true,
-		preferences = {
-			includeCompletionsForModuleExports = false, -- Faster completions
-			includeCompletionsWithSnippetText = false,
-		},
-		tsserver = {
-			logVerbosity = "off", -- Disable tsserver logging
-		},
-	},
 	settings = {
+		vtsls = {
+			autoUseWorkspaceTsdk = true, -- Use project-local TypeScript
+			experimental = {
+				maxInlayHintLength = 30,
+				completion = {
+					enableServerSideFuzzyMatch = true, -- Faster fuzzy matching on server
+				},
+			},
+		},
 		typescript = {
+			updateImportsOnFileMove = { enabled = "always" },
 			suggest = {
 				completeFunctionCalls = false,
 			},
 			inlayHints = {
-				includeInlayParameterNameHints = "none",
-				includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-				includeInlayFunctionParameterTypeHints = false,
-				includeInlayVariableTypeHints = false,
-				includeInlayPropertyDeclarationTypeHints = false,
-				includeInlayFunctionLikeReturnTypeHints = false,
-				includeInlayEnumMemberValueHints = false,
+				parameterNames = { enabled = "none" },
+				parameterTypes = { enabled = false },
+				variableTypes = { enabled = false },
+				propertyDeclarationTypes = { enabled = false },
+				functionLikeReturnTypes = { enabled = false },
+				enumMemberValues = { enabled = false },
+			},
+			preferences = {
+				includeCompletionsForModuleExports = false, -- Faster completions
+				importModuleSpecifierPreference = "relative",
 			},
 		},
 		javascript = {
+			updateImportsOnFileMove = { enabled = "always" },
 			suggest = {
 				completeFunctionCalls = false,
 			},
 			inlayHints = {
-				includeInlayParameterNameHints = "none",
-				includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-				includeInlayFunctionParameterTypeHints = false,
-				includeInlayVariableTypeHints = false,
-				includeInlayPropertyDeclarationTypeHints = false,
-				includeInlayFunctionLikeReturnTypeHints = false,
-				includeInlayEnumMemberValueHints = false,
+				parameterNames = { enabled = "none" },
+				parameterTypes = { enabled = false },
+				variableTypes = { enabled = false },
+				propertyDeclarationTypes = { enabled = false },
+				functionLikeReturnTypes = { enabled = false },
+				enumMemberValues = { enabled = false },
+			},
+			preferences = {
+				includeCompletionsForModuleExports = false,
+				importModuleSpecifierPreference = "relative",
 			},
 		},
 	},

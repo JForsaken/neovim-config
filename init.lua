@@ -399,38 +399,11 @@ require("lazy").setup({
 	-- ========================================================================
 	-- LSP & Completion
 	-- ========================================================================
+	-- nvim-lspconfig: only needed for server config schemas, not required for
+	-- the native vim.lsp.config/vim.lsp.enable API but some plugins depend on it
 	{
 		"neovim/nvim-lspconfig",
 		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
-		dependencies = {
-			"williamboman/mason.nvim",
-			"williamboman/mason-lspconfig.nvim",
-		},
-	},
-
-	{
-		"williamboman/mason.nvim",
-		cmd = "Mason",
-		lazy = true,
-		build = ":MasonUpdate",
-		opts = {
-			ui = {
-				border = "rounded",
-				icons = {
-					package_installed = "✓",
-					package_pending = "➜",
-					package_uninstalled = "✗",
-				},
-			},
-			-- Performance: limit concurrent installs
-			max_concurrent_installers = 4,
-		},
-	},
-
-	{
-		"williamboman/mason-lspconfig.nvim",
-		lazy = true,
-		dependencies = { "mason.nvim" },
 	},
 
 	-- vim-illuminate for reference highlighting
