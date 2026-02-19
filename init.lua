@@ -674,9 +674,36 @@ require("lazy").setup({
 	},
 
 	{
+		"saecki/crates.nvim",
+		event = "BufRead Cargo.toml",
+		opts = {
+			completion = {
+				cmp = { enabled = true },
+			},
+		},
+	},
+
+	{
 		"nvimtools/none-ls.nvim",
 		event = { "BufReadPre", "BufNewFile" },
 		dependencies = { "nvim-lua/plenary.nvim" },
+	},
+
+	-- ========================================================================
+	-- Debugging
+	-- ========================================================================
+	{
+		"mfussenegger/nvim-dap",
+		lazy = true,
+	},
+
+	{
+		"rcarriga/nvim-dap-ui",
+		dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
+		lazy = true,
+		config = function()
+			require("dapui").setup()
+		end,
 	},
 
 	-- ========================================================================

@@ -99,6 +99,12 @@ wk.add({
 	{ "<leader>mrr", vim.lsp.buf.rename, desc = "Rename" },
 	{ "<leader>mz", "<cmd>ZenMode<cr>", desc = "Toggle Zen" },
 
+	-- Rust
+	{ "<leader>r", group = "Rust" },
+
+	-- Debug
+	{ "<leader>d", group = "Debug" },
+
 	-- Tab
 	{ "<leader>t", group = "Tab" },
 	{ "<leader>t/", "<cmd>$tabnew<cr>", desc = "New Tab" },

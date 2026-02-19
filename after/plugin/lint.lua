@@ -31,3 +31,17 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 		})
 	end,
 })
+
+-- Format on save for Rust files (uses rust-analyzer which delegates to rustfmt)
+vim.api.nvim_create_autocmd("BufWritePre", {
+	group = format_group,
+	pattern = { "*.rs" },
+	callback = function()
+		vim.lsp.buf.format({
+			async = false,
+			filter = function(client)
+				return client.name == "rust-analyzer"
+			end,
+		})
+	end,
+})

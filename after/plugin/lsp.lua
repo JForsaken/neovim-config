@@ -288,4 +288,121 @@ vim.g.rustaceanvim = {
 	},
 }
 
+-- ============================================================================
+-- Rust-specific Keymaps (rustaceanvim)
+-- ============================================================================
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "rust",
+	callback = function(args)
+		local bufnr = args.buf
+		local opts = { buffer = bufnr, silent = true }
+
+		-- Override K with rustaceanvim hover (shows trait implementations)
+		vim.keymap.set("n", "K", function()
+			vim.cmd.RustLsp({ "hover", "actions" })
+		end, vim.tbl_extend("force", opts, { desc = "Rust Hover Actions" }))
+
+		-- Join lines (Rust-aware)
+		vim.keymap.set("n", "<leader>rj", function()
+			vim.cmd.RustLsp("joinLines")
+		end, vim.tbl_extend("force", opts, { desc = "Join Lines" }))
+		vim.keymap.set("v", "J", function()
+			vim.cmd.RustLsp("joinLines")
+		end, vim.tbl_extend("force", opts, { desc = "Join Lines" }))
+
+		-- Expand macro
+		vim.keymap.set("n", "<leader>re", function()
+			vim.cmd.RustLsp("expandMacro")
+		end, vim.tbl_extend("force", opts, { desc = "Expand Macro" }))
+
+		-- External docs
+		vim.keymap.set("n", "<leader>rd", function()
+			vim.cmd.RustLsp("externalDocs")
+		end, vim.tbl_extend("force", opts, { desc = "External Docs" }))
+
+		-- Open Cargo.toml
+		vim.keymap.set("n", "<leader>rc", function()
+			vim.cmd.RustLsp("openCargo")
+		end, vim.tbl_extend("force", opts, { desc = "Open Cargo.toml" }))
+
+		-- Parent module
+		vim.keymap.set("n", "<leader>rp", function()
+			vim.cmd.RustLsp("parentModule")
+		end, vim.tbl_extend("force", opts, { desc = "Parent Module" }))
+
+		-- Runnables
+		vim.keymap.set("n", "<leader>rr", function()
+			vim.cmd.RustLsp("runnables")
+		end, vim.tbl_extend("force", opts, { desc = "Runnables" }))
+		vim.keymap.set("n", "<leader>rl", function()
+			vim.cmd.RustLsp({ "runnables", bang = true })
+		end, vim.tbl_extend("force", opts, { desc = "Last Runnable" }))
+
+		-- Testables
+		vim.keymap.set("n", "<leader>rt", function()
+			vim.cmd.RustLsp("testables")
+		end, vim.tbl_extend("force", opts, { desc = "Testables" }))
+
+		-- Move item
+		vim.keymap.set("n", "<leader>rm", function()
+			vim.cmd.RustLsp({ "moveItem", "up" })
+		end, vim.tbl_extend("force", opts, { desc = "Move Item Up" }))
+		vim.keymap.set("n", "<leader>rM", function()
+			vim.cmd.RustLsp({ "moveItem", "down" })
+		end, vim.tbl_extend("force", opts, { desc = "Move Item Down" }))
+
+		-- Explain error / render diagnostic
+		vim.keymap.set("n", "<leader>rE", function()
+			vim.cmd.RustLsp("explainError")
+		end, vim.tbl_extend("force", opts, { desc = "Explain Error" }))
+		vim.keymap.set("n", "<leader>rD", function()
+			vim.cmd.RustLsp("renderDiagnostic")
+		end, vim.tbl_extend("force", opts, { desc = "Render Diagnostic" }))
+
+		-- Debuggables
+		vim.keymap.set("n", "<F5>", function()
+			vim.cmd.RustLsp("debuggables")
+		end, vim.tbl_extend("force", opts, { desc = "Debuggables" }))
+	end,
+})
+
+-- ============================================================================
+-- DAP Keymaps
+-- ============================================================================
+
+vim.keymap.set("n", "<leader>db", function()
+	require("dap").toggle_breakpoint()
+end, { desc = "Toggle Breakpoint" })
+vim.keymap.set("n", "<leader>dc", function()
+	require("dap").continue()
+end, { desc = "Continue" })
+vim.keymap.set("n", "<leader>do", function()
+	require("dap").step_over()
+end, { desc = "Step Over" })
+vim.keymap.set("n", "<leader>di", function()
+	require("dap").step_into()
+end, { desc = "Step Into" })
+vim.keymap.set("n", "<leader>du", function()
+	require("dapui").toggle()
+end, { desc = "Toggle DAP UI" })
+
+-- ============================================================================
+-- Crates.nvim cmp source for Cargo.toml
+-- ============================================================================
+
+vim.api.nvim_create_autocmd("BufRead", {
+	pattern = "Cargo.toml",
+	callback = function()
+		local cmp = require("cmp")
+		cmp.setup.buffer({
+			sources = cmp.config.sources({
+				{ name = "crates" },
+				{ name = "nvim_lsp" },
+				{ name = "path" },
+			}),
+		})
+	end,
+})
+
 -- nvim-cmp is configured in init.lua plugin spec
