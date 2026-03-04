@@ -46,6 +46,18 @@ wk.add({
 	},
 	{ "<leader>fr", "<cmd>lua Snacks.picker.recent()<cr>", desc = "Open Recent File" },
 	{ "<leader>fn", "<cmd>enew<cr>", desc = "New File" },
+	{
+		"<leader>fR",
+		function()
+			local search = vim.fn.input("Search: ")
+			if search == "" then
+				return
+			end
+			local replace = vim.fn.input("Replace: ")
+			vim.cmd(string.format("cfdo %%s/%s/%s/g | update", vim.fn.escape(search, "/"), vim.fn.escape(replace, "/")))
+		end,
+		desc = "Replace in Quickfix Files",
+	},
 
 	-- Window
 	{ "<leader>w", group = "Window" },
