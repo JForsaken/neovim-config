@@ -7,7 +7,7 @@ end
 local formatting = null_ls.builtins.formatting
 
 local sources = {
-	formatting.stylua, -- Lua formatting
+	formatting.stylua.with({ extra_filetypes = { "pico8" } }), -- Lua formatting
 	formatting.biome, -- JS/TS formatting
 }
 
@@ -20,7 +20,7 @@ null_ls.setup({
 local format_group = vim.api.nvim_create_augroup("FormatOnSave", { clear = true })
 vim.api.nvim_create_autocmd("BufWritePre", {
 	group = format_group,
-	pattern = { "*.js", "*.jsx", "*.ts", "*.tsx", "*.json", "*.lua", "*.css", "*.graphql" },
+	pattern = { "*.js", "*.jsx", "*.ts", "*.tsx", "*.json", "*.lua", "*.p8.lua", "*.css", "*.graphql" },
 	callback = function()
 		vim.lsp.buf.format({
 			async = false,

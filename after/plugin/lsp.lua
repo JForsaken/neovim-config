@@ -126,10 +126,11 @@ end
 
 -- Enable LSP servers
 vim.lsp.enable("lua_ls")
+vim.lsp.enable("pico8_ls")
 vim.lsp.enable("vtsls")
 vim.lsp.enable("solidity")
 
--- Lua Language Server
+-- Lua Language Server (Neovim)
 vim.lsp.config("lua_ls", {
 	cmd = { "lua-language-server" },
 	filetypes = { "lua" },
@@ -156,7 +157,6 @@ vim.lsp.config("lua_ls", {
 			hint = {
 				enable = true,
 			},
-			-- Performance optimizations
 			completion = {
 				callSnippet = "Replace",
 			},
@@ -166,6 +166,27 @@ vim.lsp.config("lua_ls", {
 		debounce_text_changes = 150,
 		allow_incremental_sync = true,
 	},
+	on_attach = on_attach,
+})
+
+-- PICO-8 filetype detection
+vim.filetype.add({
+	pattern = {
+		[".*%.p8%.lua"] = "pico8",
+	},
+})
+vim.treesitter.language.register("lua", "pico8")
+
+-- PICO-8 Language Server (https://github.com/japhib/pico8-ls)
+vim.lsp.config("pico8_ls", {
+	cmd = { vim.fn.expand("~/.local/bin/pico8-ls") },
+	filetypes = { "pico8" },
+	root_markers = { ".p8", ".git" },
+	single_file_support = true,
+	get_language_id = function()
+		return "pico-8-lua"
+	end,
+	capabilities = capabilities,
 	on_attach = on_attach,
 })
 
