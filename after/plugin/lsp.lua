@@ -129,6 +129,7 @@ vim.lsp.enable("lua_ls")
 vim.lsp.enable("pico8_ls")
 vim.lsp.enable("vtsls")
 vim.lsp.enable("solidity")
+vim.lsp.enable("gdscript")
 
 -- Lua Language Server (Neovim)
 vim.lsp.config("lua_ls", {
@@ -261,6 +262,36 @@ vim.lsp.config("solidity", {
 		allow_incremental_sync = true,
 	},
 	on_attach = on_attach,
+})
+
+-- Godot GDScript Language Server (Godot editor must be running)
+vim.filetype.add({
+	extension = {
+		gd = "gdscript",
+	},
+})
+
+vim.lsp.config("gdscript", {
+	cmd = { "nc", "127.0.0.1", "6005" },
+	filetypes = { "gd", "gdscript", "gdscript3" },
+	root_markers = { "project.godot", ".git" },
+	capabilities = capabilities,
+	flags = {
+		debounce_text_changes = 150,
+		allow_incremental_sync = true,
+	},
+	on_attach = on_attach,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "gdscript", "gdscript3" },
+	callback = function(args)
+		local opt = vim.bo[args.buf]
+		opt.expandtab = false
+		opt.tabstop = 4
+		opt.shiftwidth = 4
+		opt.softtabstop = 4
+	end,
 })
 
 -- ============================================================================
