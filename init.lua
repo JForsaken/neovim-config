@@ -270,15 +270,16 @@ require("lazy").setup({
 			words = { enabled = false }, -- Disable: conflicts with vim-illuminate
 			picker = {
 				icons = { enabled = true },
-				sources = {
-					lsp_symbols = { show_kind = true },
-					files = {
-						hidden = true,
-						ignored = true,
-						exclude = {
-							"node_modules",
-							".git",
-							"dist",
+					sources = {
+						lsp_symbols = { show_kind = true },
+						files = {
+							hidden = true,
+							ignored = true,
+							exclude = {
+								".gradle",
+								"node_modules",
+								".git",
+								"dist",
 							".venv",
 							"__pycache__",
 							".idea",
@@ -290,14 +291,15 @@ require("lazy").setup({
 							"target",
 						},
 					},
-					explorer = {
-						hidden = true,
-						ignored = true,
-						follow_file = true,
-						exclude = {
-							"node_modules",
-							".git",
-							"dist",
+						explorer = {
+							hidden = true,
+							ignored = true,
+							follow_file = true,
+							exclude = {
+								".gradle",
+								"node_modules",
+								".git",
+								"dist",
 							".venv",
 							"__pycache__",
 							".idea",
@@ -362,7 +364,7 @@ require("lazy").setup({
 					selection_caret = "  ",
 					entry_prefix = "  ",
 					path_display = { "smart" },
-					file_ignore_patterns = { "node_modules", "dist", ".git", "target/" },
+					file_ignore_patterns = { "node_modules", "dist", ".git", ".gradle", "target/" },
 					results_title = false,
 					dynamic_preview_title = true,
 				},
@@ -406,6 +408,11 @@ require("lazy").setup({
 	{
 		"neovim/nvim-lspconfig",
 		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
+	},
+
+	{
+		"mfussenegger/nvim-jdtls",
+		ft = { "java" },
 	},
 
 	-- vim-illuminate for reference highlighting
@@ -537,6 +544,7 @@ require("lazy").setup({
 		config = function()
 			require("nvim-treesitter.configs").setup({
 				ensure_installed = {
+					"java",
 					"lua",
 					"vim",
 					"vimdoc",
