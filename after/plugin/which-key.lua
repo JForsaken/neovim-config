@@ -122,15 +122,17 @@ wk.add({
 	{
 		"<leader>qq",
 		function()
-			local saved_fe = vim.bo.formatexpr
 			local saved_tw = vim.bo.textwidth
-			vim.bo.formatexpr = ""
+			local saved_fe = vim.bo.formatexpr
 			if saved_tw == 0 then
 				vim.bo.textwidth = 80
 			end
-			vim.cmd("normal! gvgq")
-			vim.bo.formatexpr = saved_fe
-			vim.bo.textwidth = saved_tw
+			vim.bo.formatexpr = ""
+			vim.cmd("normal! gvgw")
+			vim.schedule(function()
+				vim.bo.textwidth = saved_tw
+				vim.bo.formatexpr = saved_fe
+			end)
 		end,
 		desc = "Wrap Selection (native)",
 		mode = "v",
