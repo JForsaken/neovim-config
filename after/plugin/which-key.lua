@@ -117,6 +117,25 @@ wk.add({
 	-- Debug
 	{ "<leader>d", group = "Debug" },
 
+	-- Format
+	{ "<leader>q", group = "Format", mode = { "n", "v" } },
+	{
+		"<leader>qq",
+		function()
+			local saved_fe = vim.bo.formatexpr
+			local saved_tw = vim.bo.textwidth
+			vim.bo.formatexpr = ""
+			if saved_tw == 0 then
+				vim.bo.textwidth = 80
+			end
+			vim.cmd("normal! gvgq")
+			vim.bo.formatexpr = saved_fe
+			vim.bo.textwidth = saved_tw
+		end,
+		desc = "Wrap Selection (native)",
+		mode = "v",
+	},
+
 	-- Tab
 	{ "<leader>t", group = "Tab" },
 	{ "<leader>t/", "<cmd>$tabnew<cr>", desc = "New Tab" },
