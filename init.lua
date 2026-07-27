@@ -540,36 +540,33 @@ require("lazy").setup({
 	-- ========================================================================
 	{
 		"nvim-treesitter/nvim-treesitter",
+		branch = "main",
+		lazy = false,
 		build = ":TSUpdate",
-		event = { "BufReadPost", "BufNewFile" },
 		config = function()
-			require("nvim-treesitter.configs").setup({
-				ensure_installed = {
-					"java",
-					"lua",
-					"vim",
-					"vimdoc",
-					"javascript",
-					"typescript",
-					"tsx",
-					"rust",
-					"json",
-					"yaml",
-					"markdown",
-					"markdown_inline",
-				},
-				auto_install = true,
-				highlight = { enable = true },
-				indent = { enable = true },
-				incremental_selection = {
-					enable = true,
-					keymaps = {
-						init_selection = "<C-space>",
-						node_incremental = "<C-space>",
-						scope_incremental = false,
-						node_decremental = "<bs>",
-					},
-				},
+			require("nvim-treesitter").setup()
+			require("nvim-treesitter").install({
+				"java",
+				"lua",
+				"vim",
+				"vimdoc",
+				"javascript",
+				"typescript",
+				"tsx",
+				"rust",
+				"json",
+				"yaml",
+				"markdown",
+				"markdown_inline",
+			})
+
+			vim.api.nvim_create_autocmd("FileType", {
+				callback = function()
+					local ok = pcall(vim.treesitter.start)
+					if ok then
+						vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+					end
+				end,
 			})
 		end,
 	},
