@@ -77,6 +77,7 @@ local on_attach = lsp.on_attach
 vim.lsp.enable("lua_ls")
 vim.lsp.enable("pico8_ls")
 vim.lsp.enable("vtsls")
+vim.lsp.enable("jsonls")
 vim.lsp.enable("solidity")
 vim.lsp.enable("gdscript")
 
@@ -200,6 +201,25 @@ vim.lsp.config("vtsls", {
 	on_attach = on_attach,
 })
 
+-- JSON Language Server (vscode-langservers-extracted)
+vim.lsp.config("jsonls", {
+	cmd = { "vscode-json-language-server", "--stdio" },
+	filetypes = { "json", "jsonc" },
+	root_markers = { ".git" },
+	single_file_support = true,
+	init_options = {
+		-- biome (via null-ls) handles JSON formatting; keep jsonls to schema
+		-- validation/hover/completion only to avoid duplicate formatters.
+		provideFormatter = false,
+	},
+	capabilities = capabilities,
+	flags = {
+		debounce_text_changes = 150,
+		allow_incremental_sync = true,
+	},
+	on_attach = on_attach,
+})
+
 -- Solidity Language Server
 vim.lsp.config("solidity", {
 	cmd = { "nomicfoundation-solidity-language-server", "--stdio" },
@@ -267,7 +287,6 @@ vim.g.rustaceanvim = {
 				procMacro = {
 					enable = true,
 					ignored = {
-						["async-trait"] = { "async_trait" },
 						["napi-derive"] = { "napi" },
 						["async-recursion"] = { "async_recursion" },
 					},

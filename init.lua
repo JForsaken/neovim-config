@@ -259,7 +259,10 @@ require("lazy").setup({
 		priority = 1000,
 		lazy = false,
 		opts = {
-			bigfile = { enabled = true },
+			-- line_length default (1000) flags any single-line file >~1KB as a
+			-- "big file" (e.g. minified/one-line JSON payloads), which disables
+			-- LSP. Raise it so normal single-line JSON still gets the json LSP.
+			bigfile = { enabled = true, line_length = 100000 },
 			dashboard = { enabled = true },
 			explorer = { enabled = true },
 			indent = { enabled = true },
