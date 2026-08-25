@@ -274,15 +274,22 @@ vim.g.rustaceanvim = {
 		default_settings = {
 			["rust-analyzer"] = {
 				cargo = {
-					allFeatures = true,
-					loadOutDirsFromCheck = true,
+					-- NOTE: `allFeatures` / `loadOutDirsFromCheck` were removed from
+					-- rust-analyzer. Use `features = "all"` if you really need it --
+					-- it is a large cost in a monorepo, so we stay on default features.
+					targetDir = true, -- own target dir: no Cargo.lock fights with terminal cargo
 					buildScripts = {
 						enable = true,
+						rebuildOnSave = false, -- don't re-run build scripts on every save
 					},
 				},
-				checkOnSave = {
+				-- `checkOnSave` is a boolean now; everything else lives under `check`.
+				checkOnSave = true,
+				check = {
 					command = "clippy",
-					allFeatures = true,
+					workspace = false, -- only `-p <current crate>`, not the whole monorepo
+					allTargets = false, -- skip tests/benches/examples when checking
+					extraArgs = { "--no-deps" },
 				},
 				procMacro = {
 					enable = true,
