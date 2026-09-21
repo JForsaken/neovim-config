@@ -1,0 +1,23 @@
+after/plugin/lsp.lua
+  s_5fa45240d7874b::t_6ee707316a89c3 407-418
+  s_5fa45240d7874b::t_8d0d48445de81d 270-275,293,295-302,306-320,323,329-331,349-382
+  s_5fa45240d7874b::t_dee29798045c01 383
+init.lua
+  s_5fa45240d7874b::t_d9ad58a2ad7962 683-684
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "b5e16ad50d22d72205c8aeccd87af66b73a2cf16",
+  "prompts": {},
+  "sessions": {
+    "s_5fa45240d7874b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31c447eb-22ce-412d-bf30-19a7c1c0186c",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Justin D'Errico <justin.derrico1991@gmail.com>"
+    }
+  }
+}
