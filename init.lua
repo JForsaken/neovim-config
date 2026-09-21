@@ -680,7 +680,8 @@ require("lazy").setup({
 	{
 		"mrcjkb/rustaceanvim",
 		version = "^5",
-		ft = { "rust" },
+		-- rustaceanvim ships its own ftplugin and must NOT be lazy-loaded by lazy.nvim.
+		-- `ft` was dead config here anyway: an explicit `lazy = false` overrides it.
 		lazy = false,
 	},
 

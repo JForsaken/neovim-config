@@ -267,6 +267,12 @@ vim.api.nvim_create_autocmd("FileType", {
 -- Rust Configuration (rustaceanvim handles this automatically)
 -- ============================================================================
 
+-- Big-workspace posture: rust-analyzer's own in-process analysis already
+-- reports type, trait and name-resolution errors as you type. `cargo check` is
+-- only needed for borrowck and cross-crate errors, so it runs on demand
+-- (<leader>rk) instead of on every `:w`. Flip it with `:RustCheckOnSave on`.
+local rust_check_on_save = false
+
 vim.g.rustaceanvim = {
 	server = {
 		on_attach = on_attach,
@@ -284,19 +290,44 @@ vim.g.rustaceanvim = {
 					},
 				},
 				-- `checkOnSave` is a boolean now; everything else lives under `check`.
-				checkOnSave = true,
+				checkOnSave = rust_check_on_save,
 				check = {
-					command = "clippy",
+					-- `check`, not `clippy`. Both drive the same rustc front-end, so every
+					-- error that would block compilation still surfaces; clippy only adds
+					-- its lint pass on top, and that is CI's job. Note the two use
+					-- different RUSTC_WORKSPACE_WRAPPERs, so the first run after switching
+					-- rebuilds the target dir from scratch -- don't judge it on that run.
+					command = "check",
+					-- NOTE: no `extraArgs = { "--no-deps" }` here. That is a clippy-only
+					-- flag; `cargo check` rejects it outright and every check would fail.
 					workspace = false, -- only `-p <current crate>`, not the whole monorepo
 					allTargets = false, -- skip tests/benches/examples when checking
-					extraArgs = { "--no-deps" },
 				},
+				-- Don't index every crate in the workspace at load. Costs a beat on the
+				-- first request in a cold file, saves a long CPU storm on every open.
+				cachePriming = { enable = false },
+				files = {
+					-- Let rust-analyzer watch via its own native notify backend. Neovim
+					-- advertises didChangeWatchedFiles on macOS, and its client watcher
+					-- runs every filesystem event through lpeg glob matching on the main
+					-- loop -- painful once the tree is large.
+					watcher = "server",
+					-- Workspace-relative, globs are not supported. Extend per repo.
+					exclude = { "target", "node_modules", ".git", ".direnv" },
+				},
+				-- Syntax trees held in memory; fewer re-parses when jumping around a
+				-- large tree. Default is 128.
+				lru = { capacity = 256 },
 				procMacro = {
 					enable = true,
+					processes = 2, -- expand proc macros in parallel during load
 					ignored = {
 						["napi-derive"] = { "napi" },
 						["async-recursion"] = { "async_recursion" },
 					},
+				},
+				completion = {
+					limit = 50, -- bound responses; the workspace symbol space is huge
 				},
 				inlayHints = {
 					bindingModeHints = { enable = false },
@@ -314,6 +345,41 @@ vim.g.rustaceanvim = {
 		},
 	},
 }
+
+-- ----------------------------------------------------------------------------
+-- :RustCheckOnSave [on|off|toggle] -- push checkOnSave to live clients
+-- ----------------------------------------------------------------------------
+
+vim.api.nvim_create_user_command("RustCheckOnSave", function(cmd)
+	local arg = cmd.args ~= "" and cmd.args or "toggle"
+	if arg == "on" then
+		rust_check_on_save = true
+	elseif arg == "off" then
+		rust_check_on_save = false
+	else
+		rust_check_on_save = not rust_check_on_save
+	end
+
+	local clients = vim.lsp.get_clients({ name = "rust-analyzer" })
+	for _, client in ipairs(clients) do
+		client.settings = vim.tbl_deep_extend("force", client.settings or {}, {
+			["rust-analyzer"] = { checkOnSave = rust_check_on_save },
+		})
+		-- rust-analyzer re-pulls config via workspace/configuration on this.
+		client:notify("workspace/didChangeConfiguration", { settings = client.settings })
+	end
+
+	vim.notify(
+		string.format("rust-analyzer: check on save %s (%d client(s))", rust_check_on_save and "ON" or "OFF", #clients),
+		vim.log.levels.INFO
+	)
+end, {
+	nargs = "?",
+	complete = function()
+		return { "on", "off", "toggle" }
+	end,
+	desc = "Toggle rust-analyzer cargo check on save",
+})
 
 -- ============================================================================
 -- Rust-specific Keymaps (rustaceanvim)
@@ -337,6 +403,18 @@ vim.api.nvim_create_autocmd("FileType", {
 		vim.keymap.set("v", "J", function()
 			vim.cmd.RustLsp("joinLines")
 		end, vim.tbl_extend("force", opts, { desc = "Join Lines" }))
+
+		-- Check on demand -- cargo check is off on save, this is how you ask for
+		-- borrowck and cross-crate errors when you actually want them.
+		vim.keymap.set("n", "<leader>rk", function()
+			vim.cmd.RustLsp({ "flyCheck", "run" })
+		end, vim.tbl_extend("force", opts, { desc = "Run cargo check (flyCheck)" }))
+		vim.keymap.set("n", "<leader>rK", function()
+			vim.cmd.RustLsp({ "flyCheck", "clear" })
+		end, vim.tbl_extend("force", opts, { desc = "Clear flyCheck diagnostics" }))
+		vim.keymap.set("n", "<leader>rS", function()
+			vim.cmd.RustCheckOnSave("toggle")
+		end, vim.tbl_extend("force", opts, { desc = "Toggle cargo check on save" }))
 
 		-- Expand macro
 		vim.keymap.set("n", "<leader>re", function()
