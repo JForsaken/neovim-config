@@ -3,63 +3,39 @@
 -- ============================================================================
 
 -- Set LSP log level to ERROR to prevent massive log files
-vim.lsp.set_log_level("ERROR")
+vim.lsp.log.set_level("ERROR")
 
--- ============================================================================
--- Performance: Optimize LSP handlers
--- ============================================================================
-
--- Faster hover - disable markdown parsing when possible
-vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-	border = "rounded",
-	max_width = 80,
-	max_height = 20,
-	focusable = true,
-	silent = true,
-})
-
--- Faster signature help
-vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-	border = "rounded",
-	max_width = 80,
-	max_height = 12,
-	focusable = false,
-	silent = true,
-})
-
--- Performance: Debounce diagnostics to reduce CPU usage
-local function debounce(fn, ms)
-	local timer = vim.uv.new_timer()
-	return function(...)
-		local args = { ... }
-		timer:stop()
-		timer:start(ms, 0, vim.schedule_wrap(function()
-			fn(unpack(args))
-		end))
-	end
-end
+-- Rounded borders for every float: hover, signature help, diagnostics. Since
+-- 0.11 `vim.lsp.buf.hover()` no longer reads `vim.lsp.handlers`, so this is the
+-- one place to set it.
+vim.o.winborder = "rounded"
 
 -- Diagnostic configuration
 vim.diagnostic.config({
 	virtual_text = true,
-	signs = true,
+	signs = {
+		text = {
+			[vim.diagnostic.severity.ERROR] = "E",
+			[vim.diagnostic.severity.WARN] = "W",
+			[vim.diagnostic.severity.HINT] = "H",
+			[vim.diagnostic.severity.INFO] = "I",
+		},
+		numhl = {
+			[vim.diagnostic.severity.ERROR] = "DiagnosticSignError",
+			[vim.diagnostic.severity.WARN] = "DiagnosticSignWarn",
+			[vim.diagnostic.severity.HINT] = "DiagnosticSignHint",
+			[vim.diagnostic.severity.INFO] = "DiagnosticSignInfo",
+		},
+	},
 	update_in_insert = false, -- Don't update diagnostics while typing
 	underline = true,
 	severity_sort = true,
 	float = {
-		border = "rounded",
-		source = "always",
+		source = true,
 		header = "",
 		prefix = "",
 	},
 })
-
--- Diagnostic signs
-local signs = { Error = "E", Warn = "W", Hint = "H", Info = "I" }
-for type, icon in pairs(signs) do
-	local hl = "DiagnosticSign" .. type
-	vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
-end
 
 -- ============================================================================
 -- LSP Keymaps and Capabilities
@@ -208,7 +184,7 @@ vim.lsp.config("jsonls", {
 	root_markers = { ".git" },
 	single_file_support = true,
 	init_options = {
-		-- biome (via null-ls) handles JSON formatting; keep jsonls to schema
+		-- biome (via conform) handles JSON formatting; keep jsonls to schema
 		-- validation/hover/completion only to avoid duplicate formatters.
 		provideFormatter = false,
 	},
@@ -267,11 +243,12 @@ vim.api.nvim_create_autocmd("FileType", {
 -- Rust Configuration (rustaceanvim handles this automatically)
 -- ============================================================================
 
--- Big-workspace posture: rust-analyzer's own in-process analysis already
--- reports type, trait and name-resolution errors as you type. `cargo check` is
--- only needed for borrowck and cross-crate errors, so it runs on demand
--- (<leader>rk) instead of on every `:w`. Flip it with `:RustCheckOnSave on`.
-local rust_check_on_save = false
+-- Big-workspace posture: rust-analyzer's in-process analysis reports type,
+-- trait and name-resolution errors as you type; `cargo check` on save adds
+-- borrowck and the rest of rustc. The save check is scoped to the current crate
+-- (`-p`), so it stays incremental and fast in a monorepo. Flip it with
+-- `:RustCheckOnSave off` when you are mid-refactor and saving constantly.
+local rust_check_on_save = true
 
 vim.g.rustaceanvim = {
 	server = {
@@ -283,10 +260,12 @@ vim.g.rustaceanvim = {
 					-- NOTE: `allFeatures` / `loadOutDirsFromCheck` were removed from
 					-- rust-analyzer. Use `features = "all"` if you really need it --
 					-- it is a large cost in a monorepo, so we stay on default features.
-					targetDir = true, -- own target dir: no Cargo.lock fights with terminal cargo
+					targetDir = true, -- own target dir (target/rust-analyzer): no build-lock fights with terminal cargo
 					buildScripts = {
 						enable = true,
-						rebuildOnSave = false, -- don't re-run build scripts on every save
+						-- Only fires when a build.rs or proc-macro crate itself is saved,
+						-- so codegen (e.g. tonic from build.rs) stays current for free.
+						rebuildOnSave = true,
 					},
 				},
 				-- `checkOnSave` is a boolean now; everything else lives under `check`.
@@ -300,12 +279,18 @@ vim.g.rustaceanvim = {
 					command = "check",
 					-- NOTE: no `extraArgs = { "--no-deps" }` here. That is a clippy-only
 					-- flag; `cargo check` rejects it outright and every check would fail.
-					workspace = false, -- only `-p <current crate>`, not the whole monorepo
-					allTargets = false, -- skip tests/benches/examples when checking
+					-- Only `-p <current crate>`, not the whole monorepo. Downstream crates
+					-- broken by an API change show up when you save in them, or with
+					-- <leader>lW for a one-off workspace-wide check.
+					workspace = false,
+					-- Include `#[cfg(test)]` modules and integration tests, so test code is
+					-- checked on save too. Only the saved crate's targets, so it's cheap.
+					allTargets = true,
 				},
-				-- Don't index every crate in the workspace at load. Costs a beat on the
-				-- first request in a cold file, saves a long CPU storm on every open.
-				cachePriming = { enable = false },
+				-- Index the workspace in the background at load, so the first hover,
+				-- goto or completion in any file is already warm. Requests stay
+				-- responsive meanwhile: rust-analyzer cancels priming work for them.
+				cachePriming = { enable = true, numThreads = "physical" },
 				files = {
 					-- Let rust-analyzer watch via its own native notify backend. Neovim
 					-- advertises didChangeWatchedFiles on macOS, and its client watcher
@@ -316,11 +301,12 @@ vim.g.rustaceanvim = {
 					exclude = { "target", "node_modules", ".git", ".direnv" },
 				},
 				-- Syntax trees held in memory; fewer re-parses when jumping around a
-				-- large tree. Default is 128.
-				lru = { capacity = 256 },
+				-- large tree. Default is 128; memory is not the constraint here.
+				lru = { capacity = 512 },
 				procMacro = {
 					enable = true,
-					processes = 2, -- expand proc macros in parallel during load
+					-- Expand proc macros in parallel (async-graphql, serde, tonic, sqlx...).
+					processes = 4,
 					ignored = {
 						["napi-derive"] = { "napi" },
 						["async-recursion"] = { "async_recursion" },
@@ -382,7 +368,7 @@ end, {
 })
 
 -- ============================================================================
--- Rust-specific Keymaps (rustaceanvim)
+-- Rust-specific Keymaps (rustaceanvim), under the <leader>l "Language" group
 -- ============================================================================
 
 vim.api.nvim_create_autocmd("FileType", {
@@ -391,77 +377,123 @@ vim.api.nvim_create_autocmd("FileType", {
 		local bufnr = args.buf
 		local opts = { buffer = bufnr, silent = true }
 
+		-- <leader>l is the per-language group; name it for this buffer.
+		local ok_wk, wk = pcall(require, "which-key")
+		if ok_wk then
+			wk.add({ { "<leader>l", group = "Rust", buffer = bufnr } })
+		end
+
+		-- Inlay hints are off by default in Neovim; the rust-analyzer
+		-- `inlayHints` settings above only shape what the server sends.
+		vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+
 		-- Override K with rustaceanvim hover (shows trait implementations)
 		vim.keymap.set("n", "K", function()
 			vim.cmd.RustLsp({ "hover", "actions" })
 		end, vim.tbl_extend("force", opts, { desc = "Rust Hover Actions" }))
 
 		-- Join lines (Rust-aware)
-		vim.keymap.set("n", "<leader>rj", function()
+		vim.keymap.set("n", "<leader>lj", function()
 			vim.cmd.RustLsp("joinLines")
 		end, vim.tbl_extend("force", opts, { desc = "Join Lines" }))
 		vim.keymap.set("v", "J", function()
 			vim.cmd.RustLsp("joinLines")
 		end, vim.tbl_extend("force", opts, { desc = "Join Lines" }))
 
-		-- Check on demand -- cargo check is off on save, this is how you ask for
-		-- borrowck and cross-crate errors when you actually want them.
-		vim.keymap.set("n", "<leader>rk", function()
+		-- Re-run the save check (current crate) without saving.
+		vim.keymap.set("n", "<leader>lk", function()
 			vim.cmd.RustLsp({ "flyCheck", "run" })
 		end, vim.tbl_extend("force", opts, { desc = "Run cargo check (flyCheck)" }))
-		vim.keymap.set("n", "<leader>rK", function()
+		vim.keymap.set("n", "<leader>lK", function()
 			vim.cmd.RustLsp({ "flyCheck", "clear" })
 		end, vim.tbl_extend("force", opts, { desc = "Clear flyCheck diagnostics" }))
-		vim.keymap.set("n", "<leader>rS", function()
+		-- The save check is `-p <crate>`; this is the whole workspace, for after an
+		-- API change. Runs in the background into the quickfix list, sharing
+		-- rust-analyzer's target dir so it reuses the save check's artifacts.
+		vim.keymap.set("n", "<leader>lW", function()
+			local client = vim.lsp.get_clients({ bufnr = bufnr, name = "rust-analyzer" })[1]
+			local root = client and client.config.root_dir
+			if not root then
+				vim.notify("rust-analyzer is not attached", vim.log.levels.WARN)
+				return
+			end
+			vim.notify("cargo check --workspace --all-targets ...", vim.log.levels.INFO)
+			vim.system({ "cargo", "check", "--workspace", "--all-targets", "--message-format=short" }, {
+				cwd = root,
+				env = { CARGO_TARGET_DIR = root .. "/target/rust-analyzer" },
+				text = true,
+			}, vim.schedule_wrap(function(out)
+				local items = {}
+				for line in (out.stderr or ""):gmatch("[^\n]+") do
+					local file, lnum, col, kind, msg = line:match("^([^:]+):(%d+):(%d+): (%a+)(.*)$")
+					if file and (kind == "error" or kind == "warning") then
+						table.insert(items, {
+							filename = root .. "/" .. file,
+							lnum = tonumber(lnum),
+							col = tonumber(col),
+							type = kind:sub(1, 1):upper(),
+							text = kind .. msg,
+						})
+					end
+				end
+				vim.fn.setqflist({}, " ", { title = "cargo check --workspace", items = items })
+				if out.code == 0 and #items == 0 then
+					vim.notify("cargo check --workspace: clean", vim.log.levels.INFO)
+				else
+					vim.cmd("botright copen")
+				end
+			end))
+		end, vim.tbl_extend("force", opts, { desc = "cargo check whole workspace" }))
+		vim.keymap.set("n", "<leader>lS", function()
 			vim.cmd.RustCheckOnSave("toggle")
 		end, vim.tbl_extend("force", opts, { desc = "Toggle cargo check on save" }))
 
 		-- Expand macro
-		vim.keymap.set("n", "<leader>re", function()
+		vim.keymap.set("n", "<leader>le", function()
 			vim.cmd.RustLsp("expandMacro")
 		end, vim.tbl_extend("force", opts, { desc = "Expand Macro" }))
 
 		-- External docs
-		vim.keymap.set("n", "<leader>rd", function()
+		vim.keymap.set("n", "<leader>lo", function()
 			vim.cmd.RustLsp("externalDocs")
 		end, vim.tbl_extend("force", opts, { desc = "External Docs" }))
 
 		-- Open Cargo.toml
-		vim.keymap.set("n", "<leader>rc", function()
+		vim.keymap.set("n", "<leader>lc", function()
 			vim.cmd.RustLsp("openCargo")
 		end, vim.tbl_extend("force", opts, { desc = "Open Cargo.toml" }))
 
 		-- Parent module
-		vim.keymap.set("n", "<leader>rp", function()
+		vim.keymap.set("n", "<leader>lp", function()
 			vim.cmd.RustLsp("parentModule")
 		end, vim.tbl_extend("force", opts, { desc = "Parent Module" }))
 
 		-- Runnables
-		vim.keymap.set("n", "<leader>rr", function()
+		vim.keymap.set("n", "<leader>lr", function()
 			vim.cmd.RustLsp("runnables")
 		end, vim.tbl_extend("force", opts, { desc = "Runnables" }))
-		vim.keymap.set("n", "<leader>rl", function()
+		vim.keymap.set("n", "<leader>lR", function()
 			vim.cmd.RustLsp({ "runnables", bang = true })
 		end, vim.tbl_extend("force", opts, { desc = "Last Runnable" }))
 
 		-- Testables
-		vim.keymap.set("n", "<leader>rt", function()
+		vim.keymap.set("n", "<leader>lt", function()
 			vim.cmd.RustLsp("testables")
 		end, vim.tbl_extend("force", opts, { desc = "Testables" }))
 
 		-- Move item
-		vim.keymap.set("n", "<leader>rm", function()
+		vim.keymap.set("n", "<leader>lm", function()
 			vim.cmd.RustLsp({ "moveItem", "up" })
 		end, vim.tbl_extend("force", opts, { desc = "Move Item Up" }))
-		vim.keymap.set("n", "<leader>rM", function()
+		vim.keymap.set("n", "<leader>lM", function()
 			vim.cmd.RustLsp({ "moveItem", "down" })
 		end, vim.tbl_extend("force", opts, { desc = "Move Item Down" }))
 
 		-- Explain error / render diagnostic
-		vim.keymap.set("n", "<leader>rE", function()
+		vim.keymap.set("n", "<leader>lE", function()
 			vim.cmd.RustLsp("explainError")
 		end, vim.tbl_extend("force", opts, { desc = "Explain Error" }))
-		vim.keymap.set("n", "<leader>rD", function()
+		vim.keymap.set("n", "<leader>lD", function()
 			vim.cmd.RustLsp("renderDiagnostic")
 		end, vim.tbl_extend("force", opts, { desc = "Render Diagnostic" }))
 
@@ -491,23 +523,3 @@ end, { desc = "Step Into" })
 vim.keymap.set("n", "<leader>du", function()
 	require("dapui").toggle()
 end, { desc = "Toggle DAP UI" })
-
--- ============================================================================
--- Crates.nvim cmp source for Cargo.toml
--- ============================================================================
-
-vim.api.nvim_create_autocmd("BufRead", {
-	pattern = "Cargo.toml",
-	callback = function()
-		local cmp = require("cmp")
-		cmp.setup.buffer({
-			sources = cmp.config.sources({
-				{ name = "crates" },
-				{ name = "nvim_lsp" },
-				{ name = "path" },
-			}),
-		})
-	end,
-})
-
--- nvim-cmp is configured in init.lua plugin spec

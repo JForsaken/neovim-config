@@ -236,7 +236,6 @@ require("lazy").setup({
 				override = {
 					["vim.lsp.util.convert_input_to_markdown_lines"] = false,
 					["vim.lsp.util.stylize_markdown"] = false,
-					["cmp.entry.get_documentation"] = false,
 				},
 				hover = { enabled = false }, -- Use native hover
 				signature = { enabled = false }, -- Use native signature
@@ -353,57 +352,6 @@ require("lazy").setup({
 		},
 	},
 
-	{
-		"nvim-telescope/telescope.nvim",
-		cmd = "Telescope",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
-			{ "nvim-telescope/telescope-file-browser.nvim" },
-		},
-		config = function()
-			require("telescope").setup({
-				defaults = {
-					prompt_prefix = " ",
-					selection_caret = "  ",
-					entry_prefix = "  ",
-					path_display = { "smart" },
-					file_ignore_patterns = { "node_modules", "dist", ".git", ".gradle", "target/" },
-					results_title = false,
-					dynamic_preview_title = true,
-				},
-				extensions = {
-					fzf = {
-						fuzzy = true,
-						override_generic_sorter = true,
-						override_file_sorter = true,
-						case_mode = "smart_case",
-					},
-					file_browser = {
-						theme = "ivy",
-						hidden = true,
-						respect_gitignore = false,
-						hijack_netrw = true,
-						initial_mode = "normal",
-						layout_config = {
-							preview_width = 0.5,
-						},
-						display_stat = false,
-						dir_icon = "",
-						dir_icon_hl = "Default",
-						grouped = true,
-						select_buffer = true,
-						hide_parent_dir = false,
-						use_fd = true,
-						prompt_path = true,
-					},
-				},
-			})
-			require("telescope").load_extension("fzf")
-			require("telescope").load_extension("file_browser")
-		end,
-	},
-
 	-- ========================================================================
 	-- LSP & Completion
 	-- ========================================================================
@@ -437,105 +385,30 @@ require("lazy").setup({
 	},
 
 	{
-		"hrsh7th/nvim-cmp",
-		lazy = false,
-		priority = 100,
-		dependencies = {
-			"hrsh7th/cmp-nvim-lsp",
-			"hrsh7th/cmp-buffer",
-			"hrsh7th/cmp-path",
-			"hrsh7th/cmp-cmdline",
-			"saadparwaiz1/cmp_luasnip",
-			"L3MON4D3/LuaSnip",
-			"rafamadriz/friendly-snippets",
-			"onsails/lspkind.nvim",
+		"saghen/blink.cmp",
+		-- Tagged releases ship a prebuilt Rust fuzzy matcher; no cargo build needed.
+		version = "1.*",
+		lazy = false, -- lua/config/lsp.lua pulls its LSP capabilities at startup
+		dependencies = { "rafamadriz/friendly-snippets" },
+		opts = {
+			keymap = {
+				-- <CR> accepts (the first item when none is selected), <C-Space> opens,
+				-- <C-e> closes, <C-n>/<C-p>/<Up>/<Down> move, <C-b>/<C-f> scroll docs.
+				preset = "enter",
+				-- Leave <Tab> to copilot.vim.
+				["<Tab>"] = false,
+				["<S-Tab>"] = false,
+			},
+			completion = {
+				list = { selection = { preselect = true, auto_insert = false } },
+				menu = { border = "rounded" },
+				documentation = { auto_show = true, auto_show_delay_ms = 200, window = { border = "rounded" } },
+			},
+			signature = { enabled = false }, -- native <C-k> signature help
+			-- "snippets" uses vim.snippet and picks up friendly-snippets on its own.
+			sources = { default = { "lsp", "path", "snippets", "buffer" } },
+			fuzzy = { implementation = "prefer_rust_with_warning" },
 		},
-		config = function()
-			local cmp = require("cmp")
-			local luasnip = require("luasnip")
-			local lspkind = require("lspkind")
-
-			require("luasnip.loaders.from_vscode").lazy_load()
-
-			cmp.setup({
-				snippet = {
-					expand = function(args)
-						luasnip.lsp_expand(args.body)
-					end,
-				},
-				completion = {
-					autocomplete = { cmp.TriggerEvent.TextChanged },
-					completeopt = "menu,menuone,noselect",
-				},
-				window = {
-					completion = cmp.config.window.bordered(),
-					documentation = cmp.config.window.bordered(),
-				},
-				mapping = cmp.mapping.preset.insert({
-					["<C-b>"] = cmp.mapping.scroll_docs(-4),
-					["<C-f>"] = cmp.mapping.scroll_docs(4),
-					["<C-Space>"] = cmp.mapping.complete(),
-					["<C-e>"] = cmp.mapping.abort(),
-					["<CR>"] = cmp.mapping.confirm({ select = true }),
-					["<Up>"] = cmp.mapping.select_prev_item(),
-					["<Down>"] = cmp.mapping.select_next_item(),
-					["<C-n>"] = cmp.mapping.select_next_item(),
-					["<C-p>"] = cmp.mapping.select_prev_item(),
-					-- ["<Tab>"] = cmp.mapping(function(fallback)
-					-- 	if cmp.visible() then
-					-- 		cmp.select_next_item()
-					-- 	elseif luasnip.expand_or_jumpable() then
-					-- 		luasnip.expand_or_jump()
-					-- 	else
-					-- 		fallback()
-					-- 	end
-					-- end, { "i", "s" }),
-					-- ["<S-Tab>"] = cmp.mapping(function(fallback)
-					-- 	if cmp.visible() then
-					-- 		cmp.select_prev_item()
-					-- 	elseif luasnip.jumpable(-1) then
-					-- 		luasnip.jump(-1)
-					-- 	else
-					-- 		fallback()
-					-- 	end
-					-- end, { "i", "s" }),
-				}),
-				sources = cmp.config.sources({
-					{ name = "nvim_lsp" },
-					{ name = "luasnip" },
-					{ name = "buffer" },
-					{ name = "path" },
-				}),
-				formatting = {
-					format = lspkind.cmp_format({
-						mode = "symbol_text",
-						maxwidth = 50,
-						menu = {
-							nvim_lsp = "[LSP]",
-							luasnip = "[Snip]",
-							buffer = "[Buf]",
-							path = "[Path]",
-						},
-					}),
-				},
-			})
-
-			cmp.setup.cmdline({ "/", "?" }, {
-				mapping = cmp.mapping.preset.cmdline(),
-				sources = { { name = "buffer" } },
-			})
-
-			cmp.setup.cmdline(":", {
-				mapping = cmp.mapping.preset.cmdline(),
-				sources = cmp.config.sources({ { name = "path" } }, { { name = "cmdline" } }),
-			})
-		end,
-	},
-
-	{
-		"L3MON4D3/LuaSnip",
-		version = "v2.*",
-		build = "make install_jsregexp",
 	},
 
 	-- ========================================================================
@@ -651,12 +524,7 @@ require("lazy").setup({
 	{
 		"windwp/nvim-autopairs",
 		event = "InsertEnter",
-		config = function()
-			require("nvim-autopairs").setup({})
-			local cmp_autopairs = require("nvim-autopairs.completion.cmp")
-			local cmp = require("cmp")
-			cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
-		end,
+		opts = {},
 	},
 
 	{
@@ -679,7 +547,7 @@ require("lazy").setup({
 	-- ========================================================================
 	{
 		"mrcjkb/rustaceanvim",
-		version = "^5",
+		version = "^9",
 		-- rustaceanvim ships its own ftplugin and must NOT be lazy-loaded by lazy.nvim.
 		-- `ft` was dead config here anyway: an explicit `lazy = false` overrides it.
 		lazy = false,
@@ -689,16 +557,17 @@ require("lazy").setup({
 		"saecki/crates.nvim",
 		event = "BufRead Cargo.toml",
 		opts = {
-			completion = {
-				cmp = { enabled = true },
-			},
+			-- Serves completion/hover/actions as an in-process LSP, so it works with
+			-- blink.cmp (or any engine) without a dedicated source.
+			lsp = { enabled = true, completion = true, hover = true, actions = true },
 		},
 	},
 
 	{
-		"nvimtools/none-ls.nvim",
-		event = { "BufReadPre", "BufNewFile" },
-		dependencies = { "nvim-lua/plenary.nvim" },
+		"stevearc/conform.nvim",
+		event = "BufWritePre",
+		cmd = "ConformInfo",
+		-- Setup lives in after/plugin/format.lua.
 	},
 
 	-- ========================================================================

@@ -81,8 +81,8 @@ wk.add({
 	{ "<leader>ed", "<cmd>lua vim.diagnostic.open_float()<cr>", desc = "Details" },
 	{ "<leader>el", "<cmd>lua vim.diagnostic.setloclist()<cr>", desc = "List" },
 	{ "<leader>ep", "<cmd>lua Snacks.picker.diagnostics()<cr>", desc = "Picker" },
-	{ "<leader>en", "<cmd>lua vim.diagnostic.goto_next()<cr>", desc = "Next" },
-	{ "<leader>eN", "<cmd>lua vim.diagnostic.goto_prev()<cr>", desc = "Previous" },
+	{ "<leader>en", "<cmd>lua vim.diagnostic.jump({ count = 1, float = true })<cr>", desc = "Next" },
+	{ "<leader>eN", "<cmd>lua vim.diagnostic.jump({ count = -1, float = true })<cr>", desc = "Previous" },
 
 	-- Git
 	{ "<leader>g", group = "Git" },
@@ -111,8 +111,8 @@ wk.add({
 	{ "<leader>mrr", vim.lsp.buf.rename, desc = "Rename" },
 	{ "<leader>mz", "<cmd>ZenMode<cr>", desc = "Toggle Zen" },
 
-	-- Rust
-	{ "<leader>r", group = "Rust" },
+	-- Language: per-filetype keys (LSP basics, plus e.g. rustaceanvim in Rust buffers)
+	{ "<leader>l", group = "Language" },
 
 	-- Debug
 	{ "<leader>d", group = "Debug" },

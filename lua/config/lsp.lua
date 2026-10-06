@@ -2,7 +2,7 @@ local M = {}
 
 function M.capabilities()
 	local capabilities = vim.lsp.protocol.make_client_capabilities()
-	return require("cmp_nvim_lsp").default_capabilities(capabilities)
+	return require("blink.cmp").get_lsp_capabilities(capabilities)
 end
 
 function M.on_attach(client, bufnr)
@@ -27,13 +27,17 @@ function M.on_attach(client, bufnr)
 	vim.keymap.set("n", "<Tab>", vim.lsp.buf.code_action, opts)
 
 	vim.keymap.set("n", "<leader>lf", function()
-		vim.lsp.buf.format({ async = true })
-	end, opts)
+		require("conform").format({ async = true })
+	end, vim.tbl_extend("force", opts, { desc = "Format" }))
 
-	vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
-	vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
-	vim.keymap.set("n", "<leader>ld", vim.diagnostic.open_float, opts)
-	vim.keymap.set("n", "<leader>ll", vim.diagnostic.setloclist, opts)
+	vim.keymap.set("n", "[d", function()
+		vim.diagnostic.jump({ count = -1, float = true })
+	end, opts)
+	vim.keymap.set("n", "]d", function()
+		vim.diagnostic.jump({ count = 1, float = true })
+	end, opts)
+	vim.keymap.set("n", "<leader>ld", vim.diagnostic.open_float, vim.tbl_extend("force", opts, { desc = "Diagnostic Float" }))
+	vim.keymap.set("n", "<leader>ll", vim.diagnostic.setloclist, vim.tbl_extend("force", opts, { desc = "Diagnostics to Loclist" }))
 
 	local ok_ill, illuminate = pcall(require, "illuminate")
 	if ok_ill then
