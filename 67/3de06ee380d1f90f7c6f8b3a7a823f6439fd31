@@ -1,0 +1,40 @@
+after/plugin/trouble.lua
+  s_ee9fdf2740c496::t_da2aa20598a0f8 1
+after/plugin/lsp.lua
+  s_ee9fdf2740c496::t_fb330eb8834e99 6,8-11,16-29,34,187
+  s_ee9fdf2740c496::t_4dad836c34738c 284,371,380-385,396,404,407,413,447,452,457,462,467,472,475,480,485,488,493,496
+  s_ee9fdf2740c496::t_3a659babb274cd 403,410-412,414-446
+  s_ee9fdf2740c496::t_58f3befb14d11f 386-389
+  s_ee9fdf2740c496::t_ba920018e4599b 263
+  s_ee9fdf2740c496::t_68a085d8f7a2ba 246-251,266-268,282-283,285-288,290-293,304-305,308-309
+after/plugin/which-key.lua
+  s_ee9fdf2740c496::t_4dad836c34738c 114-115
+  s_ee9fdf2740c496::t_da2aa20598a0f8 84-85
+lua/config/lsp.lua
+  s_ee9fdf2740c496::t_da2aa20598a0f8 5,30,33-38
+  s_ee9fdf2740c496::t_4dad836c34738c 31,39-40
+init.lua
+  s_ee9fdf2740c496::t_2b22b40ee2d99d 388-410,527,560-562,567-570
+  s_ee9fdf2740c496::t_38928b096ca39b 550
+lazy-lock.json
+  s_ee9fdf2740c496::t_adbc9122fb8360 3,5,7,10-12,16,18-20,23,27-29,40
+  s_ee9fdf2740c496::t_1bb59a78d8bd54 32
+after/plugin/format.lua
+  s_ee9fdf2740c496::t_da2aa20598a0f8 1-2,7-34,38-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "673de06ee380d1f90f7c6f8b3a7a823f6439fd31",
+  "prompts": {},
+  "sessions": {
+    "s_ee9fdf2740c496": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5efa38c3-e34c-4f7b-9aa3-1838969379d2",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Justin D'Errico <justin.derrico1991@gmail.com>"
+    }
+  }
+}
